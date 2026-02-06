@@ -1,8 +1,9 @@
+import type { CharacterT } from "@/-hooks/pdf/parser";
 import { Box, Button } from "@mui/material";
 import { type ChangeEvent, useRef } from "react";
 
 type UploadPropsT = {
-  parsePdf: (file: File) => Promise<void>;
+  parsePdf: (file: File) => Promise<CharacterT | null>;
   isLoading: boolean;
 };
 

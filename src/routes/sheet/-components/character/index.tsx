@@ -1,14 +1,30 @@
-import { Box } from "@mui/material";
-import type { CharacterT } from "@/routes/-hooks/pdf/parser";
+import { Box, Divider } from "@mui/material";
+import { Identity } from "./-components/identity";
+import type { CharacterT } from "@/-hooks/pdf/parser";
 
 type CharacterPropsT = {
   character: CharacterT | null;
+  sheetId: string;
 };
 
-export function Character({ character }: CharacterPropsT) {
+export function Character({ character, sheetId }: CharacterPropsT) {
+  if (!character) return null;
+
   return (
-    <Box>
-      <pre>{JSON.stringify(character, null, 2)}</pre>
-    </Box>
+    <>
+      <Identity character={character} sheetId={sheetId} />
+      <Divider className="my-3" />
+      {
+        // <Abilities character={character} />
+        // <Divider className="my-3"/>
+        // <Combat character={character} />
+        // <Divider className="my-3"/>
+        // <Weapons character={character} />
+        // <Divider className="my-3"/>
+      }
+      <Box className="overflow-hidden">
+        <pre>{JSON.stringify(character, null, 2)}</pre>
+      </Box>
+    </>
   );
 }

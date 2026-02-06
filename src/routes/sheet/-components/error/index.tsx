@@ -10,9 +10,7 @@ export function Err({ error }: ErrPropsT) {
 
   return (
     <Box
-      sx={{
-        position: "relative",
-      }}
+    className="relative"
     >
       <Backdrop showIcon={false} isVisible={true} />
       <Box

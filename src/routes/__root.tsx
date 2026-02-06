@@ -1,6 +1,6 @@
-// import { TanStackDevtools } from "@tanstack/react-devtools";
+import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
-// import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -11,19 +11,17 @@ export const Route = createRootRoute({
   component: () => (
     <>
       <Outlet />
-      {
-        // <TanStackDevtools
-        //   config={{
-        //     position: "bottom-right",
-        //   }}
-        //   plugins={[
-        //     {
-        //       name: "Tanstack Router",
-        //       render: <TanStackRouterDevtoolsPanel />,
-        //     },
-        //   ]}
-        // />
-      }
+      <TanStackDevtools
+        config={{
+          position: "top-right",
+        }}
+        plugins={[
+          {
+            name: "Tanstack Router",
+            render: <TanStackRouterDevtoolsPanel />,
+          },
+        ]}
+      />
     </>
   ),
 });

@@ -10,43 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SheetIndexRouteImport } from './routes/sheet/index'
+import { Route as SheetSheetIdRouteImport } from './routes/sheet/$sheetId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SheetIndexRoute = SheetIndexRouteImport.update({
-  id: '/sheet/',
-  path: '/sheet/',
+const SheetSheetIdRoute = SheetSheetIdRouteImport.update({
+  id: '/sheet/$sheetId',
+  path: '/sheet/$sheetId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/sheet/': typeof SheetIndexRoute
+  '/sheet/$sheetId': typeof SheetSheetIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/sheet': typeof SheetIndexRoute
+  '/sheet/$sheetId': typeof SheetSheetIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/sheet/': typeof SheetIndexRoute
+  '/sheet/$sheetId': typeof SheetSheetIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sheet/'
+  fullPaths: '/' | '/sheet/$sheetId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sheet'
-  id: '__root__' | '/' | '/sheet/'
+  to: '/' | '/sheet/$sheetId'
+  id: '__root__' | '/' | '/sheet/$sheetId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  SheetIndexRoute: typeof SheetIndexRoute
+  SheetSheetIdRoute: typeof SheetSheetIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,11 +58,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sheet/': {
-      id: '/sheet/'
-      path: '/sheet'
-      fullPath: '/sheet/'
-      preLoaderRoute: typeof SheetIndexRouteImport
+    '/sheet/$sheetId': {
+      id: '/sheet/$sheetId'
+      path: '/sheet/$sheetId'
+      fullPath: '/sheet/$sheetId'
+      preLoaderRoute: typeof SheetSheetIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -70,7 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SheetIndexRoute: SheetIndexRoute,
+  SheetSheetIdRoute: SheetSheetIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

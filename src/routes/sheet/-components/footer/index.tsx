@@ -2,20 +2,20 @@ import { CloseFullscreen, OpenInFull } from "@mui/icons-material";
 import { Button, Grid } from "@mui/material";
 import OBR from "@owlbear-rodeo/sdk";
 import { useState } from "react";
-import { DNS_ID } from "@/lib/helper";
+import { RIGHT_SHEET_POPOVER_ID } from "@/lib/constants";
 
 export function Footer() {
   const [isMinimized, setIsMinimized] = useState(false);
 
   async function closeSheet() {
-    await OBR.popover.close(`${DNS_ID}/sheet-popover`);
+    await OBR.popover.close(RIGHT_SHEET_POPOVER_ID);
   }
   async function handleSizeSheet() {
     if (isMinimized) {
-      await OBR.popover.setHeight(`${DNS_ID}/sheet-popover`, 500);
+      await OBR.popover.setHeight(RIGHT_SHEET_POPOVER_ID, 500);
       setIsMinimized((prev) => !prev);
     } else {
-      await OBR.popover.setHeight(`${DNS_ID}/sheet-popover`, 45);
+      await OBR.popover.setHeight(RIGHT_SHEET_POPOVER_ID, 45);
       setIsMinimized((prev) => !prev);
     }
   }
@@ -23,24 +23,14 @@ export function Footer() {
   return (
     <Grid
       container
-      sx={{
-        height: 45,
-        alignItems: "center",
-        justifyContent: "space-between",
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        borderTop: "2px solid #BB99FF",
-        background: "#FFF"
-      }}
+      className="h-11.25 items-center justify-between fixed bottom-0 left-0 right-0 border-t-2 border-[#BB99FF] bg-white"
     >
       <Button onClick={handleSizeSheet}>
         {isMinimized ? <OpenInFull /> : <CloseFullscreen />}
       </Button>
       <Button
         onClick={closeSheet}
-        sx={{ background: "#BB99FF", color: "#FFF", mr: "1rem" }}
+        className="bg-[#BB99FF] text-white mr-4 hover:brightness-110 transition rounded-full px-4"
       >
         Close
       </Button>

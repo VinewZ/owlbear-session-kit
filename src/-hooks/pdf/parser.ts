@@ -7,15 +7,15 @@ export type CharacterT = {
     experience: number
     background: string
     species: string
-    traits: string[]
-    feats: string[]
-    personality: string[]
-    alignment: string[]
-    appearance: string[]
-    languages: string[]
+    traits: string
+    feats: string
+    personality: string
+    alignment: string
+    appearance: string
+    languages: string
   }
 
-  equipment: string[],
+  equipment: string,
 
   abilities: Record<string, {
     score?: number
@@ -35,8 +35,8 @@ export type CharacterT = {
   weapons: Weapon[]
   spellcasting?: Spellcasting
   spells: Spell[]
-  classFeatures: string[]
-  proficiencies: string[]
+  classFeatures: string
+  proficiencies: string
   tool: string
 
   raw: Record<string, string[]>
@@ -70,6 +70,9 @@ const WEAPON_FIELD_REGEX =
 const SPELL_FIELD_REGEX =
   /^(SPELL NAME|SPELL LEVEL|RANGE|CASTING TIME|SPELL NOTES)\s*(\d+)$/
 
+
+const multiLineSplit = (v: string) => v.split(/\r\n?|\n/).filter(line => line.trim() !== '').join("\r\n")
+
 export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
   const char: CharacterT = {
     identity: {
@@ -80,12 +83,12 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
       experience: 0,
       background: "",
       species: "",
-      traits: [],
-      feats: [],
-      personality: [],
-      alignment: [],
-      appearance: [],
-      languages: [],
+      traits: "",
+      feats: "",
+      personality: "",
+      alignment: "",
+      appearance: "",
+      languages: "",
     },
 
     abilities: {},
@@ -100,10 +103,10 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
       mod: "",
     },
     spells: [],
-    classFeatures: [],
-    proficiencies: [],
+    classFeatures: "",
+    proficiencies: "",
     tool: "",
-    equipment: [],
+    equipment: "",
 
     raw: {},
   }
@@ -171,13 +174,11 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
       }
 
       if (field.startsWith("CLASS FEATURES")) {
-        char.classFeatures.push(value)
+        char.classFeatures = multiLineSplit(value)
         continue
       }
 
       /* ──────────── Static Fields ─────────── */
-      const multiLineSplit = (v: string) => v.split(/\r\n?|\n/).filter(line => line.trim() !== '')
-
       switch (field) {
         // Identity
         case "Name": char.identity.name = value; break
@@ -208,7 +209,7 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
         case "SPELLCASTING MOD": if (char.spellcasting) char.spellcasting.mod = value; break
 
         // Proficiencies
-        case "WEAPON PROF": char.proficiencies.push(value); break
+        case "WEAPON PROF": char.proficiencies = multiLineSplit(value); break
         case "TOOL PROF": char.tool = value; break
       }
     }

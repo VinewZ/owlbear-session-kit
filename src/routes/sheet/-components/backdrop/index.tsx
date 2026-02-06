@@ -13,11 +13,7 @@ export function Backdrop({
   if (!isVisible) return null;
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-      }}
-    >
+    <Box className="relative">
       {showIcon && (
         <Box
           style={{
@@ -35,12 +31,7 @@ export function Backdrop({
         </Box>
       )}
       <Box
-        sx={{
-          position: "fixed",
-          width: "100vw",
-          height: "100vh",
-          background: "#00000080",
-        }}
+        className="fixed w-screen h-screen bg-black/80 z-50"
       ></Box>
     </Box>
   );

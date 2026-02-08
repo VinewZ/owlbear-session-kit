@@ -19,6 +19,8 @@ function RouteComponent() {
   const sheet = sheets?.get(sheetId) ?? null;
   const character = sheet?.get("character") ?? null;
 
+  console.log(character);
+
   return (
     <Box className="relative w-screen h-[calc(100vh-45px)]">
       <Sheet.Backdrop isVisible={isLoading} />

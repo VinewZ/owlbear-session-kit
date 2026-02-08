@@ -7,38 +7,64 @@ const MESSAGE_UPDATE = 0;
 const MESSAGE_SYNC_STEP_1 = 1;
 const MESSAGE_SYNC_STEP_2 = 2;
 
-const broadcast = (id: string, type: number, payload: Uint8Array) => {
-  const message = { type, payload: Array.from(payload) };
-  OBR.broadcast.sendMessage(id, message);
-};
+// Chunking configuration
+const SAFE_CHUNK_SIZE = 12 * 1024; // Leave headroom for metadata
 
-export function useYDoc(id: string): Y.Doc | null {
+/**
+ * Split a Uint8Array into chunks
+ */
+function chunkArray(arr: Uint8Array, chunkSize: number) {
+  const chunks: Uint8Array[] = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    chunks.push(arr.slice(i, i + chunkSize));
+  }
+  return chunks;
+}
+
+/**
+ * Broadcast a payload in chunks
+ */
+function broadcastChunked(roomId: string, type: number, payload: Uint8Array) {
+  const chunks = chunkArray(payload, SAFE_CHUNK_SIZE);
+
+  // Send each chunk as a separate message
+  for (const chunk of chunks) {
+    OBR.broadcast.sendMessage(roomId, { type, payload: Array.from(chunk) });
+  }
+}
+
+/**
+ * Yjs hook with automatic chunked broadcast
+ */
+export function useYDoc(roomId: string): Y.Doc | null {
   const [ydoc, setYdoc] = useState<Y.Doc | null>(null);
 
   useEffect(() => {
     const doc = new Y.Doc();
-    const persistence = new IndexeddbPersistence(id, doc);
+    const persistence = new IndexeddbPersistence(roomId, doc);
 
+    // Send initial sync after persistence
     persistence.whenSynced.then(() => {
       setYdoc(doc);
       const stateVector = Y.encodeStateVector(doc);
-      broadcast(id, MESSAGE_SYNC_STEP_1, stateVector);
+      broadcastChunked(roomId, MESSAGE_SYNC_STEP_1, stateVector);
     });
 
+    // Send updates (chunked)
     const updateHandler = (update: Uint8Array, origin: unknown) => {
-      if (origin === persistence) {
-        return;
-      }
-      broadcast(id, MESSAGE_UPDATE, update);
+      if (origin === persistence) return;
+      broadcastChunked(roomId, MESSAGE_UPDATE, update);
     };
     doc.on("update", updateHandler);
 
+    // Handle incoming messages
     const handleMessage = (event: { data: unknown; connectionId: string }) => {
       const { type, payload } = event.data as {
         type: number;
         payload: number[];
       };
       if (typeof type !== "number" || !payload) return;
+
       const data = new Uint8Array(payload);
 
       switch (type) {
@@ -47,7 +73,7 @@ export function useYDoc(id: string): Y.Doc | null {
           break;
         case MESSAGE_SYNC_STEP_1: {
           const update = Y.encodeStateAsUpdate(doc, data);
-          broadcast(id, MESSAGE_SYNC_STEP_2, update);
+          broadcastChunked(roomId, MESSAGE_SYNC_STEP_2, update);
           break;
         }
         case MESSAGE_SYNC_STEP_2:
@@ -55,7 +81,7 @@ export function useYDoc(id: string): Y.Doc | null {
           break;
       }
     };
-    OBR.broadcast.onMessage(id, handleMessage);
+    OBR.broadcast.onMessage(roomId, handleMessage);
 
     return () => {
       doc.off("update", updateHandler);
@@ -63,7 +89,7 @@ export function useYDoc(id: string): Y.Doc | null {
       doc.destroy();
       setYdoc(null);
     };
-  }, [id]);
+  }, [roomId]);
 
   return ydoc;
 }

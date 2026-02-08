@@ -5,3 +5,5 @@ export const SHEET_UPLOADED_ID = `${DNS_ID}/sheet-uploaded-id`
 export const SHEET_PARSED_ID = `${DNS_ID}/sheet-parsed-id`
 
 export const DICE_REGEX= /\b[1-9]\d*[dD](?:4|6|8|10|12|20|100)(?:[+-]\d+)?\b/g;
+
+export const Y_CHARACTER_SHEETS = `${DNS_ID}/character-sheets`

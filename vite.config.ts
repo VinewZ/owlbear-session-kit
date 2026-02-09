@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import { devtools } from "@tanstack/devtools-vite";
 import viteReact from "@vitejs/plugin-react";
 
@@ -27,5 +27,9 @@ export default defineConfig({
     cors: {
       origin: "https://www.owlbear.rodeo",
     },
+  },
+  test: {
+    globals: true,
+    environment: "jsdom",
   },
 });

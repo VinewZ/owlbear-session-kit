@@ -1,6 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import * as Y from "yjs";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -40,4 +39,3 @@ export const logger = {
   success: (message: string, ...args: unknown[]) =>
     logMessage("SUCCESS", message, ...args),
 };
-

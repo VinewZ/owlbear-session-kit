@@ -1,56 +1,54 @@
 import OBR, { type ContextMenuContext } from "@owlbear-rodeo/sdk";
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  ATTACH_SHEET_CONTEXT_MENU_ID,
-  RIGHT_SHEET_POPOVER_ID,
+	ATTACH_SHEET_CONTEXT_MENU_ID,
+	RIGHT_SHEET_POPOVER_ID,
 } from "@/lib/constants";
-import { Test } from "./-yjs-test";
 
 export const Route = createFileRoute("/")({
-  component: App,
+	component: App,
 });
 
 function App() {
-  function handleOBKClick(context: ContextMenuContext) {
-    if (context.items.length > 1) {
-      OBR.notification.show(
-        "ERROR: attaching to multiple tokens is not supported.",
-        "ERROR",
-      );
-      return;
-    }
-    OBR.popover.open({
-      id: RIGHT_SHEET_POPOVER_ID,
-      url: `/sheet/${context.items[0].id}`,
-      height: 500,
-      width: 600,
-      disableClickAway: true,
-      anchorOrigin: {
-        horizontal: "RIGHT",
-        vertical: "BOTTOM",
-      },
-    });
-  }
+	function handleOBKClick(context: ContextMenuContext) {
+		if (context.items.length > 1) {
+			OBR.notification.show(
+				"ERROR: attaching to multiple tokens is not supported.",
+				"ERROR",
+			);
+			return;
+		}
+		OBR.popover.open({
+			id: RIGHT_SHEET_POPOVER_ID,
+			url: `/sheet/${context.items[0].id}`,
+			height: 500,
+			width: 600,
+			disableClickAway: true,
+			anchorOrigin: {
+				horizontal: "RIGHT",
+				vertical: "BOTTOM",
+			},
+		});
+	}
 
-  OBR.contextMenu.create({
-    id: ATTACH_SHEET_CONTEXT_MENU_ID,
-    icons: [
-      {
-        icon: "/icons/sheet.svg",
-        label: "View Sheet",
-        filter: {
-          every: [{ key: "layer", value: "CHARACTER" }],
-        },
-      },
-    ],
-    onClick: handleOBKClick,
-  });
+	OBR.contextMenu.create({
+		id: ATTACH_SHEET_CONTEXT_MENU_ID,
+		icons: [
+			{
+				icon: "/icons/sheet.svg",
+				label: "View Sheet",
+				filter: {
+					every: [{ key: "layer", value: "CHARACTER" }],
+				},
+			},
+		],
+		onClick: handleOBKClick,
+	});
 
-  return (
-    <>
-      <div>AVAILABLE: {String(OBR.isAvailable)}</div>
-      <div>READY: {String(OBR.isReady)}</div>
-      <Test/>
-    </>
-  );
+	return (
+		<>
+			<div>AVAILABLE: {String(OBR.isAvailable)}</div>
+			<div>READY: {String(OBR.isReady)}</div>
+		</>
+	);
 }

@@ -1,5 +1,5 @@
 import { Box, Grid, Typography } from "@mui/material";
-import type { CharacterT } from "@/-hooks/pdf/parser";
+import type { CharacterT } from "@/hooks/pdf/parser";
 
 export function Abilities({ character }: { character: CharacterT }) {
   return (

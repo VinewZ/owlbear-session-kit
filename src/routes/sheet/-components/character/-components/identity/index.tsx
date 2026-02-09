@@ -1,6 +1,6 @@
 import { Box, Divider, Typography } from "@mui/material";
 import OBR, { isImage } from "@owlbear-rodeo/sdk";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react"; // Add useCallback
 import { logger } from "@/lib/utils";
 import type { SheetMap } from "@/lib/yjs/types";
 
@@ -11,9 +11,10 @@ type IdentityPropsT = {
 
 export function Identity({ character, sheetId }: IdentityPropsT) {
   const [portrait, setPortrait] = useState<string | null>(null);
-  async function fetchPortrait() {
+
+  const fetchPortrait = useCallback(async () => {
+    // Wrap in useCallback
     try {
-      logger.warn("Fetching items for portrait with sheetId:", sheetId);
       const items = await OBR.scene.items.getItems(isImage);
       const item = items?.find((item) => item.id === sheetId);
       if (item) {
@@ -24,11 +25,11 @@ export function Identity({ character, sheetId }: IdentityPropsT) {
     } catch (error) {
       logger.error("Error fetching item:", error);
     }
-  }
+  }, [sheetId]); // Remove setPortrait from dependencies
 
   useEffect(() => {
     fetchPortrait();
-  }, []);
+  }, [fetchPortrait]);
 
   if (!character) return null;
 

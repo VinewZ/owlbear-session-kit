@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { Upload } from "../upload";
 import type * as Y from "yjs";
-import type { CharacterT } from "@/-hooks/pdf/parser";
+import type { CharacterT } from "@/hooks/pdf/parser";
 import type { SheetMap } from "@/lib/yjs/types";
 
 type CharactersListPropsT = {

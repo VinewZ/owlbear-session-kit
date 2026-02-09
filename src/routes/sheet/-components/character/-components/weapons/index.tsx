@@ -7,8 +7,8 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { useHighlightDice } from "@/-hooks/dice/highlight-dice";
-import type { CharacterT } from "@/-hooks/pdf/parser";
+import { useHighlightDice } from "@/hooks/dice/highlight-dice";
+import type { CharacterT } from "@/hooks/pdf/parser";
 
 export function Weapons({ character }: { character: CharacterT }) {
   const highlight = useHighlightDice();

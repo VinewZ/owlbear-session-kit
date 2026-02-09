@@ -1,3 +1,4 @@
+import * as Y from "yjs";
 import { Box, Divider, Typography } from "@mui/material";
 import OBR, { isImage } from "@owlbear-rodeo/sdk";
 import { useEffect, useState, useCallback } from "react"; // Add useCallback
@@ -42,7 +43,7 @@ export function Identity({ character, sheetId }: IdentityPropsT) {
           fontWeight="bold"
           fontSize={32}
         >
-          {character.get("identity").get("name")}
+          {((character.get("identity") as Y.Map<string | number>)?.get("name") as string || '')}
 
           {portrait && (
             <img
@@ -57,14 +58,14 @@ export function Identity({ character, sheetId }: IdentityPropsT) {
         <Box className="flex flex-col justify-center">
           <Box>
             <Typography className="text-nowrap">
-              {character.get("identity").get("class")}
+              {((character.get("identity") as Y.Map<string | number>)?.get("class") as string || '')}
             </Typography>
             <sub>Class</sub>
           </Box>
           <Divider />
           <Box>
             <Typography className="text-nowrap">
-              {character.get("identity").get("species")}
+              {((character.get("identity") as Y.Map<string | number>)?.get("species") as string || '')}
             </Typography>
             <sub>Race</sub>
           </Box>
@@ -72,14 +73,14 @@ export function Identity({ character, sheetId }: IdentityPropsT) {
         <Box className="flex flex-col justify-center">
           <Box>
             <Typography className="text-nowrap">
-              {character.get("identity").get("level")}
+              {((character.get("identity") as Y.Map<string | number>)?.get("level") as number || 0)}
             </Typography>
             <sub>Level</sub>
           </Box>
           <Divider />
           <Box>
             <Typography className="text-nowrap">
-              {character.get("identity").get("alignment")}
+              {((character.get("identity") as Y.Map<string | number>)?.get("alignment") as string || '')}
             </Typography>
             <sub>Alignment</sub>
           </Box>
@@ -87,14 +88,14 @@ export function Identity({ character, sheetId }: IdentityPropsT) {
         <Box className="flex flex-col justify-center">
           <Box>
             <Typography className="text-nowrap">
-              {character.get("identity").get("experience")}
+              {((character.get("identity") as Y.Map<string | number>)?.get("experience") as number || 0)}
             </Typography>
             <sub>Experience</sub>
           </Box>
           <Divider />
           <Box>
             <Typography className="text-nowrap">
-              {character.get("identity").get("background")}
+              {((character.get("identity") as Y.Map<string | number>)?.get("background") as string || '')}
             </Typography>
             <sub>Background</sub>
           </Box>

@@ -1,63 +1,48 @@
-import * as Y from "yjs";
-import { TextAreaBinding } from "y-textarea";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef } from "react";
-import { useChunkedBroadcast } from "@/lib/yjs/use-chunked-broadcast";
+import { useRef } from "react";
+import { Upload } from "@/components/upload";
+import { use5eSheetParser } from "@/hooks/pdf/use-5e-sheet-parser";
+import { useYDoc } from "@/hooks/yjs/use-y-doc";
+import { useYDocFullSync } from "@/hooks/yjs/use-y-doc-full-sync";
+import { MAIN_BROADCAST_CHANNEL, EX_JSON } from "@/lib/constants";
+import { InteractiveSheet } from "./-components/interactive-sheet";
 
 export const Route = createFileRoute("/sheet/$sheetId")({
-	component: RouteComponent,
+  component: RouteComponent,
 });
 
 function RouteComponent() {
-	const { sheetId } = Route.useParams();
-	const { sendMessage, listenMessage } = useChunkedBroadcast();
-	const txtAreaRef = useRef<HTMLTextAreaElement>(null);
+  const { sheetId } = Route.useParams();
+  const ref = useRef<HTMLTextAreaElement>(null);
+  const yjsDocName = `sheet-${sheetId}`;
+  const broadcastChannel = MAIN_BROADCAST_CHANNEL;
+  const { character, isLoading, parsePdf } = use5eSheetParser();
 
-	const ydoc = useMemo(() => new Y.Doc(), []);
-	const ytext = useMemo(() => ydoc.getText(sheetId), [ydoc, sheetId]);
+  // This hook Syncs users in the same session editing the same sheet
+  const yDoc = useYDoc({ ref, yjsDocName, broadcastChannel });
 
-	useEffect(() => {
-		if (!txtAreaRef.current) return;
-		const binding = new TextAreaBinding(ytext, txtAreaRef.current);
+  // This hook Syncs new users who joined late with the current state of the sheet
+  const { isSynced } = useYDocFullSync({
+    ydoc: yDoc,
+    docId: yjsDocName,
+    broadcastChannel: MAIN_BROADCAST_CHANNEL,
+  });
 
-		return () => binding.destroy();
-	}, [txtAreaRef.current, ytext]);
-
-	useEffect(() => {
-		const unsubscribe = listenMessage({
-			channel: `yjs-${sheetId}`,
-			onMessage: (base64Message) => {
-				const update = Uint8Array.from(atob(base64Message), (c) =>
-					c.charCodeAt(0),
-				);
-				Y.applyUpdate(ydoc, update, "remote");
-			},
-		});
-
-		// Send local updates
-		const observer = (update: Uint8Array, origin: any) => {
-			if (origin === "remote") return; // avoid echo
-			const base64Message = btoa(String.fromCharCode(...update));
-			sendMessage({
-				channel: `yjs-${sheetId}`,
-				message: base64Message,
-			});
-		};
-
-		ydoc.on("update", observer);
-
-		return () => {
-			unsubscribe();
-			ydoc.off("update", observer);
-			ydoc.destroy();
-		};
-	}, [sheetId, sendMessage, listenMessage, ydoc]);
-
-	return (
-		<textarea
-			ref={txtAreaRef}
-			className="w-full h-full border p-2"
-			placeholder={`Editing sheet: ${sheetId}`}
-		/>
-	);
+  return (
+    <div>
+      {EX_JSON ? (
+        <InteractiveSheet character={EX_JSON} />
+      ) : (
+        <Upload isLoading={isLoading} parsePdf={parsePdf} sheetId={sheetId} />
+      )}
+      {
+        // <textarea
+        //   ref={ref}
+        //   className="w-full h-full border p-2 disabled:cursor-not-allowed disabled:bg-gray-100"
+        //   placeholder={`Editing sheet: ${sheetId}`}
+        //   disabled={!isSynced}
+        // />
+      }
+    </div>
+  );
 }

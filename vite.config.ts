@@ -9,27 +9,30 @@ import { fileURLToPath, URL } from "node:url";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    devtools(),
-    tanstackRouter({
-      target: "react",
-      autoCodeSplitting: true,
-    }),
-    viteReact(),
-    tailwindcss(),
-  ],
-  resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
-  },
-  server: {
-    cors: {
-      origin: "https://www.owlbear.rodeo",
-    },
-  },
-  test: {
-    globals: true,
-    environment: "jsdom",
-  },
+	plugins: [
+		devtools(),
+		tanstackRouter({
+			target: "react",
+			autoCodeSplitting: true,
+		}),
+		viteReact(),
+		tailwindcss(),
+	],
+	resolve: {
+		alias: {
+			"@": fileURLToPath(new URL("./src", import.meta.url)),
+		},
+	},
+	server: {
+		cors: {
+			origin: "https://www.owlbear.rodeo",
+		},
+	},
+	test: {
+		globals: true,
+		environment: "jsdom",
+	},
+	optimizeDeps: {
+		include: ["y-textarea"], // pre-bundle it as ESM
+	},
 });

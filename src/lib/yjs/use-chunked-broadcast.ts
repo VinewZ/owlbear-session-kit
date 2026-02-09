@@ -19,9 +19,6 @@ type ListenMessagePropsT = {
 export function useChunkedBroadcast() {
 	function sendMessage({ channel, message }: SendMessagePropsT) {
 		chunkMessage(message, async (chunk) => {
-			console.log(
-				`[sendMessage] Sending chunk ${chunk.index + 1}/${chunk.total}`,
-			);
 			await OBR.broadcast.sendMessage(channel, chunk, { destination: "ALL" });
 		});
 	}

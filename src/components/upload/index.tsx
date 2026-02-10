@@ -1,33 +1,21 @@
 import { Button } from "@mui/material";
-import OBR from "@owlbear-rodeo/sdk";
 import { Loader2, Upload as UploadIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import type { CharacterT } from "@/hooks/pdf/parser";
+import { useRef } from "react";
+import type { Doc } from "yjs";
+import { applyJSONToYDoc } from "@/helpers/apply-json-to-ydoc";
+import { useToken } from "@/hooks/obr/use-token";
+import { use5eSheetParser } from "@/hooks/pdf/use-5e-sheet-parser";
+import { logger } from "@/lib/utils";
 
 interface UploadProps {
-  isLoading: boolean;
-  parsePdf: (file: File) => Promise<CharacterT | null>;
+  ydoc: Doc;
   sheetId: string;
 }
 
-async function getName(sheetId: string): Promise<string> {
-  const items = await OBR.scene.items.getItems([sheetId]);
-  if (items.length !== 1) {
-    return "";
-  }
-
-  return items[0].name;
-}
-
-export function Upload({ isLoading, parsePdf, sheetId }: UploadProps) {
+export function Upload({ sheetId, ydoc }: UploadProps) {
+  const { isLoading, parsePdf } = use5eSheetParser();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [name, setName] = useState("");
-
-  useEffect(() => {
-    getName(sheetId).then((res) => {
-      setName(res);
-    });
-  }, [sheetId]);
+  const { token } = useToken(sheetId);
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();
@@ -38,20 +26,19 @@ export function Upload({ isLoading, parsePdf, sheetId }: UploadProps) {
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    // Clear the input so the same file can be selected again
     event.target.value = "";
 
-    // Validate it's a PDF
     if (file.type !== "application/pdf") {
       alert("Please select a PDF file");
       return;
     }
 
     try {
-      await parsePdf(file);
+      const character = await parsePdf(file);
+      if (!character) return logger.error("Parsed PDF is empty");
+      applyJSONToYDoc(ydoc, character, `sheet-${sheetId}`);
     } catch (err) {
-      console.error("Error parsing PDF:", err);
+      logger.error("Unable to parse PDF:", err);
       alert("Failed to parse PDF. Please try again.");
     }
   };
@@ -74,7 +61,7 @@ export function Upload({ isLoading, parsePdf, sheetId }: UploadProps) {
         variant="contained"
         startIcon={isLoading ? <Loader2 /> : <UploadIcon />}
       >
-        {isLoading ? "Parsing..." : `Upload PDF for Sheet ${name}`}
+        {isLoading ? "Parsing..." : `Upload PDF for Sheet ${token?.name}`}
       </Button>
     </div>
   );

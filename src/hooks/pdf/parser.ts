@@ -13,6 +13,7 @@ export type CharacterT = {
     alignment: string;
     appearance: string;
     languages: string;
+    passivePerception: number;
   };
 
   equipment: string;
@@ -29,6 +30,9 @@ export type CharacterT = {
   skills: Record<string, number>;
 
   combat: {
+    maxHP?: number;
+    currentHP?: number;
+    tempHP?: number;
     armorClass?: number;
     speed?: string;
     initiative?: number;
@@ -112,6 +116,7 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
       alignment: "",
       appearance: "",
       languages: "",
+      passivePerception: 0,
     },
 
     abilities: {},
@@ -139,6 +144,7 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
   }
 
   for (const [field, widgets] of Object.entries(form)) {
+    if (field.startsWith("Check Box")) continue;
     for (const widget of widgets as { value?: unknown }[]) {
       if (typeof widget.value !== "string") continue;
 
@@ -269,6 +275,9 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
         case "EQUIPMENT":
           char.equipment = multiLineSplit(value);
           break;
+        case "PASSIVE PERCEPTION":
+          char.identity.passivePerception = Number(value);
+          break;
 
         // Combat
         case "Armor Class":
@@ -282,6 +291,15 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
           break;
         case "PROF BONUS":
           char.combat.proficiencyBonus = Number(value);
+          break;
+        case "Max HP":
+          char.combat.maxHP = Number(value);
+          break;
+        case "Current HP":
+          char.combat.currentHP = Number(value);
+          break;
+        case "Temp HP":
+          char.combat.tempHP = Number(value) || 0;
           break;
 
         // Spellcasting

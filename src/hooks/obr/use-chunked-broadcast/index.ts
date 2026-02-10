@@ -4,7 +4,7 @@ import {
 	chunkMessage,
 	type OnMessageFn,
 	unChunkMessage,
-} from "../chunker";
+} from "./chunker";
 
 type SendMessagePropsT = {
 	channel: string;

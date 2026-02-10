@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import * as Y from "yjs";
-import { base64ToUint8Array, uint8ArrayToBase64 } from "@/lib/chunker";
-import { useChunkedBroadcast } from "@/lib/yjs/use-chunked-broadcast";
 import { logger } from "@/lib/utils";
+import { useChunkedBroadcast } from "../obr/use-chunked-broadcast";
+import {
+  base64ToUint8Array,
+  uint8ArrayToBase64,
+} from "../obr/use-chunked-broadcast/chunker";
 
 type Props = {
   ydoc: Y.Doc;

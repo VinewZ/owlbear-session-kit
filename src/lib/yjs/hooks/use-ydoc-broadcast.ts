@@ -2,28 +2,45 @@ import { useEffect, useRef } from "react";
 import * as Y from "yjs";
 import { useChunkedBroadcast } from "@/hooks/obr/use-chunked-broadcast";
 import { MAIN_BROADCAST_CHANNEL } from "@/lib/constants";
-import { logger } from "@/lib/utils";
 import type { YjsMessage } from "../types";
 
 export function useYDocBroadcast(ydoc: Y.Doc) {
   const applyingRemote = useRef(false);
 
+  const bufferRef = useRef<Uint8Array[]>([]);
+  const flushTimerRef = useRef<number | null>(null);
+  const FLUSH_INTERVAL = 50; // ms (tune 30–100)
+
   const { sendMessage, listenMessage } = useChunkedBroadcast();
 
   useEffect(() => {
     /* ---- send incremental updates ---- */
-    const onLocalUpdate = (update: Uint8Array) => {
-      if (applyingRemote.current) return;
+    const flush = () => {
+      if (bufferRef.current.length === 0) return;
 
-      const msg: YjsMessage = {
+      const merged = Y.mergeUpdates(bufferRef.current);
+      bufferRef.current = [];
+      flushTimerRef.current = null;
+
+      const msg = {
         type: "update",
-        update: Array.from(update),
+        update: Array.from(merged),
       };
 
       sendMessage({
         channel: MAIN_BROADCAST_CHANNEL,
         message: JSON.stringify(msg),
       });
+    };
+
+    const onLocalUpdate = (update: Uint8Array) => {
+      if (applyingRemote.current) return;
+
+      bufferRef.current.push(update);
+
+      if (!flushTimerRef.current) {
+        flushTimerRef.current = window.setTimeout(flush, FLUSH_INTERVAL);
+      }
     };
 
     ydoc.on("update", onLocalUpdate);

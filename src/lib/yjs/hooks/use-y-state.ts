@@ -25,8 +25,6 @@ export function useYState<T>(
   const set = useCallback(
     (next: T) => {
       setValue(next); // immediate UI update
-      console.log("Key: ", key);
-      console.log("Next: ", next);
       ymap.set(key, next); // sync to Yjs
     },
     [ymap, key],

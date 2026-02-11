@@ -1,11 +1,11 @@
 import { Box } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Upload } from "@/components/upload";
-import { useYDoc } from "@/lib/yjs/hooks/use-ydoc";
-import * as Y from "yjs";
+import type * as Y from "yjs";
 import { Footer } from "@/components/footer";
+import { Upload } from "@/components/upload";
 import { useYState } from "@/lib/yjs/hooks/use-y-state";
+import { useYDoc } from "@/lib/yjs/hooks/use-ydoc";
 
 export const Route = createFileRoute("/sheet/$sheetId")({
   component: RouteComponent,
@@ -20,8 +20,6 @@ function RouteComponent() {
 
   useEffect(() => {
     const observer = () => {
-      console.log("ALL SHEETS updated");
-
       const currentSheet = sheets.get(sheetId);
       setSheet(currentSheet);
     };

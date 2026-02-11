@@ -6,13 +6,17 @@ import { applyJSONToYDoc } from "@/helpers/apply-json-to-ydoc";
 import { useToken } from "@/hooks/obr/use-token";
 import { use5eSheetParser } from "@/hooks/pdf/use-5e-sheet-parser";
 import { logger } from "@/lib/utils";
+import { jsonToY } from "@/lib/yjs/helpers/json-to-y";
+import type * as Y from "yjs";
+import type { YMap } from "node_modules/yjs/dist/src/internals";
+import type { CharacterT } from "@/hooks/pdf/parser";
 
 interface UploadProps {
-  ydoc: Doc;
+  sheetsMap: YMap<CharacterT>;
   sheetId: string;
 }
 
-export function Upload({ sheetId, ydoc }: UploadProps) {
+export function Upload({ sheetId, sheetsMap, setCharacter }: UploadProps) {
   const { isLoading, parsePdf } = use5eSheetParser();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { token } = useToken(sheetId);
@@ -36,7 +40,9 @@ export function Upload({ sheetId, ydoc }: UploadProps) {
     try {
       const character = await parsePdf(file);
       if (!character) return logger.error("Parsed PDF is empty");
-      applyJSONToYDoc(ydoc, character, `sheet-${sheetId}`);
+      const charMap = jsonToY(character);
+      sheetsMap.set(sheetId, charMap);
+      setCharacter(charMap)
     } catch (err) {
       logger.error("Unable to parse PDF:", err);
       alert("Failed to parse PDF. Please try again.");

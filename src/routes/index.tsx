@@ -4,6 +4,7 @@ import {
   ATTACH_SHEET_CONTEXT_MENU_ID,
   RIGHT_SHEET_POPOVER_ID,
 } from "@/lib/constants";
+import * as Y from "yjs"
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -45,10 +46,12 @@ function App() {
     onClick: handleOBKClick,
   });
 
+  const ydoc = new Y.Doc()
+
   return (
-    <>
+    <div>
       <div>AVAILABLE: {String(OBR.isAvailable)}</div>
       <div>READY: {String(OBR.isReady)}</div>
-    </>
+    </div>
   );
 }

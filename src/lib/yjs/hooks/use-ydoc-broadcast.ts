@@ -1,12 +1,14 @@
-import OBR from "@owlbear-rodeo/sdk";
 import { useEffect, useRef } from "react";
 import * as Y from "yjs";
+import { useChunkedBroadcast } from "@/hooks/obr/use-chunked-broadcast";
 import { MAIN_BROADCAST_CHANNEL } from "@/lib/constants";
+import { logger } from "@/lib/utils";
 import type { YjsMessage } from "../types";
 
 export function useYDocBroadcast(ydoc: Y.Doc) {
   const applyingRemote = useRef(false);
-  const synced = useRef(false);
+
+  const { sendMessage, listenMessage } = useChunkedBroadcast();
 
   useEffect(() => {
     /* ---- send incremental updates ---- */
@@ -18,40 +20,40 @@ export function useYDocBroadcast(ydoc: Y.Doc) {
         update: Array.from(update),
       };
 
-      OBR.broadcast.sendMessage(MAIN_BROADCAST_CHANNEL, msg);
+      sendMessage({
+        channel: MAIN_BROADCAST_CHANNEL,
+        message: JSON.stringify(msg),
+      });
     };
 
     ydoc.on("update", onLocalUpdate);
 
     /* ---- receive messages ---- */
-    const unsubscribe = OBR.broadcast.onMessage(
-      MAIN_BROADCAST_CHANNEL,
-      (event) => {
-        const msg = event.data as YjsMessage;
-
+    const unsubscribe = listenMessage({
+      channel: MAIN_BROADCAST_CHANNEL,
+      onMessage: (raw) => {
+        const parsedMsg = JSON.parse(raw);
+        const msg = parsedMsg as YjsMessage;
         switch (msg.type) {
           case "sync-request": {
-            if (synced.current) return;
-
             const full = Y.encodeStateAsUpdate(ydoc);
 
-            OBR.broadcast.sendMessage(MAIN_BROADCAST_CHANNEL, {
-              type: "sync-response",
-              update: Array.from(full),
+            sendMessage({
+              channel: MAIN_BROADCAST_CHANNEL,
+              message: JSON.stringify({
+                type: "sync-response",
+                update: Array.from(full),
+              }),
             });
 
-            synced.current = true;
             break;
           }
 
           case "sync-response": {
-            if (synced.current) return;
-
             applyingRemote.current = true;
             Y.applyUpdate(ydoc, new Uint8Array(msg.update));
             applyingRemote.current = false;
 
-            synced.current = true;
             break;
           }
 
@@ -63,16 +65,17 @@ export function useYDocBroadcast(ydoc: Y.Doc) {
           }
         }
       },
-    );
+    });
 
     /* ---- request initial sync ---- */
-    OBR.broadcast.sendMessage(MAIN_BROADCAST_CHANNEL, {
-      type: "sync-request",
+    sendMessage({
+      channel: MAIN_BROADCAST_CHANNEL,
+      message: JSON.stringify({ type: "sync-request" }),
     });
 
     return () => {
       ydoc.off("update", onLocalUpdate);
       unsubscribe();
     };
-  }, [ydoc]);
+  }, [ydoc, sendMessage, listenMessage]);
 }

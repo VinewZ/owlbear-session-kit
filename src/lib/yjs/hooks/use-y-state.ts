@@ -1,11 +1,10 @@
-
 import { useCallback, useEffect, useState } from "react";
 import type * as Y from "yjs";
 
 export function useYState<T>(
   ymap: Y.Map<any>,
   key: string,
-  defaultValue: T
+  defaultValue: T,
 ): [T, (value: T) => void] {
   const [value, setValue] = useState<T>(() => {
     return ymap.get(key) ?? defaultValue;
@@ -25,10 +24,12 @@ export function useYState<T>(
   // Push local updates → Yjs
   const set = useCallback(
     (next: T) => {
-      setValue(next);        // immediate UI update
-      ymap.set(key, next);   // sync to Yjs
+      setValue(next); // immediate UI update
+      console.log("Key: ", key);
+      console.log("Next: ", next);
+      ymap.set(key, next); // sync to Yjs
     },
-    [ymap, key]
+    [ymap, key],
   );
 
   return [value, set];

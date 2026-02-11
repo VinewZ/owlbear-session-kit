@@ -1,4 +1,4 @@
-export const CHUNK_SIZE = 16000; // bytes, adjust to SDK limit
+export const CHUNK_SIZE = 14000; // bytes, adjust to SDK limit
 
 export type Chunk = {
 	id: string;

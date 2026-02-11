@@ -1,10 +1,11 @@
 import { Box } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
-import { useYState } from "@/lib/yjs/hooks/use-y-state";
-import { useYDoc } from "@/lib/yjs/hooks/use-ydoc";
 import { useEffect, useState } from "react";
 import { Upload } from "@/components/upload";
-import type { CharacterT } from "@/hooks/pdf/parser";
+import { useYDoc } from "@/lib/yjs/hooks/use-ydoc";
+import * as Y from "yjs";
+import { Footer } from "@/components/footer";
+import { useYState } from "@/lib/yjs/hooks/use-y-state";
 
 export const Route = createFileRoute("/sheet/$sheetId")({
   component: RouteComponent,
@@ -13,27 +14,34 @@ export const Route = createFileRoute("/sheet/$sheetId")({
 function RouteComponent() {
   const { sheetId } = Route.useParams();
   const ydoc = useYDoc();
-  const sheets = ydoc.getMap<CharacterT>("sheets");
-  const [character, setCharacter] = useState();
+  const sheets = ydoc.getMap<Y.Map<any>>("sheets");
   const [text, setText] = useYState(sheets, "text", "");
+  const [sheet, setSheet] = useState();
 
   useEffect(() => {
-    console.log(JSON.stringify(ydoc.toJSON(), null, 2));
-  }, [text]);
+    const observer = () => {
+      console.log("ALL SHEETS updated");
+
+      const currentSheet = sheets.get(sheetId);
+      setSheet(currentSheet);
+    };
+
+    sheets.observe(observer);
+
+    return () => {
+      sheets.unobserve(observer);
+    };
+  }, [sheets, sheetId]);
 
   return (
     <Box>
       <div>ID</div>
       <div>{sheetId}</div>
-
       <input value={text} onChange={(e) => setText(e.currentTarget.value)} />
 
-      <Upload
-        sheetId={sheetId}
-        sheetsMap={sheets}
-        setCharacter={setCharacter}
-      />
-      <pre>{JSON.stringify(character, null, 2)}</pre>
+      <Upload sheetId={sheetId} ydoc={ydoc} />
+      <pre>{JSON.stringify(sheet?.toJSON(), null, 2)}</pre>
+      <Footer />
     </Box>
   );
 }

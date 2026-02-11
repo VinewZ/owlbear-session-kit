@@ -5,13 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const LOG_COLORS = {
-  WARNING: "\x1b[33m", // Yellow
-  ERROR: "\x1b[31m", // Red
-  SUCCESS: "\x1b[32m", // Green
-  RESET: "\x1b[0m", // Reset color
-};
-
 const LOG_PREFIXES = {
   WARNING: "WARN",
   ERROR: "ERROR",
@@ -21,12 +14,15 @@ const LOG_PREFIXES = {
 type LogLevel = keyof typeof LOG_PREFIXES;
 
 function logMessage(level: LogLevel, message: string, ...args: unknown[]) {
-  const color = LOG_COLORS[level];
   const prefix = LOG_PREFIXES[level];
   const timestamp = new Date().toLocaleTimeString();
 
   console.log(
-    `${color}[${timestamp}] ${prefix}: ${message}${LOG_COLORS.RESET}`,
+    `
+    [${timestamp}]
+    ${prefix}:
+     ${message}
+    `,
     ...args,
   );
 }

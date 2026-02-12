@@ -3,8 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import type * as Y from "yjs";
 import { Footer } from "@/components/footer";
-import { Upload } from "@/components/upload";
 import { useYState } from "@/lib/yjs/hooks/use-y-state";
+// import { Upload } from "@/components/upload";
 import { useYDoc } from "@/lib/yjs/hooks/use-ydoc";
 
 export const Route = createFileRoute("/sheet/$sheetId")({
@@ -14,9 +14,9 @@ export const Route = createFileRoute("/sheet/$sheetId")({
 function RouteComponent() {
   const { sheetId } = Route.useParams();
   const ydoc = useYDoc();
-  const sheets = ydoc.getMap<Y.Map<any>>("sheets");
+  const sheets = ydoc.getMap<Y.Map<unknown>>("sheets");
+  const [_, setSheet] = useState<Y.Map<unknown> | undefined>();
   const [text, setText] = useYState(sheets, "text", "");
-  const [sheet, setSheet] = useState();
 
   useEffect(() => {
     const observer = () => {
@@ -31,14 +31,21 @@ function RouteComponent() {
     };
   }, [sheets, sheetId]);
 
+  useEffect(() => {
+    window.postMessage(text, "*");
+  }, [text]);
+
+  console.log(window.origin)
+
   return (
     <Box>
       <div>ID</div>
       <div>{sheetId}</div>
       <input value={text} onChange={(e) => setText(e.currentTarget.value)} />
-
-      <Upload sheetId={sheetId} ydoc={ydoc} />
-      <pre>{JSON.stringify(sheet?.toJSON(), null, 2)}</pre>
+      <div>
+        <p>sheet text:</p>
+        {text}
+      </div>
       <Footer />
     </Box>
   );

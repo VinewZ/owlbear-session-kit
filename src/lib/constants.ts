@@ -1,21 +1,14 @@
 const DNS_ID = "com.vinewz.session-kit";
-export const RIGHT_SHEET_POPOVER_ID = `${DNS_ID}/right-sheet-popover`;
+export const SHEET_POPVER_ID = `${DNS_ID}/right-sheet-popover`;
 export const ATTACH_SHEET_CONTEXT_MENU_ID = `${DNS_ID}/attach-sheet-context-menu`;
 export const SHEET_UPLOADED_ID = `${DNS_ID}/sheet-uploaded-id`;
 export const SHEET_PARSED_ID = `${DNS_ID}/sheet-parsed-id`;
 
 export const DICE_REGEX = /\b[1-9]\d*[dD](?:4|6|8|10|12|20|100)(?:[+-]\d+)?\b/g;
 
-export const Y_CHARACTER_SHEETS = `${DNS_ID}/character-sheets`;
-
 export const MAIN_BROADCAST_CHANNEL = `${DNS_ID}/main-broadcast-channel`;
 
-// WebRTC Configuration
-export const WEBRTC_SIGNALING_CHANNEL = `${DNS_ID}/webrtc-signaling`;
-
-// Yjs sync configuration
-export const YJS_UPDATE_BUFFER_MS = 50; // ms to buffer rapid edits
-export const YJS_SYNC_TIMEOUT_MS = 10000; // max wait for initial sync
+export const DEFAULT_SHEET_POPOVER_SIZE = { width: 900, height: 900 };
 
 export const SKILL_TO_ABILITY = {
 	ACROBATICS: "DEX",

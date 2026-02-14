@@ -1,6 +1,3 @@
-// Polyfills for simple-peer (must be first)
-import "./polyfills";
-
 import GlobalStyles from "@mui/material/GlobalStyles";
 import { StyledEngineProvider } from "@mui/material/styles";
 import OBR from "@owlbear-rodeo/sdk";
@@ -12,6 +9,8 @@ import ReactDOM from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 
 import "./styles.css";
+import { I18nextProvider } from "react-i18next";
+import i18n from "./lib/i18n";
 import reportWebVitals from "./reportWebVitals.ts";
 
 // Create a new router instance
@@ -37,12 +36,14 @@ if (rootElement && !rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement);
 	root.render(
 		<StrictMode>
-			<StyledEngineProvider enableCssLayer>
-				<GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
-				<WaitForOBR>
-					<RouterProvider router={router} />
-				</WaitForOBR>
-			</StyledEngineProvider>
+			<I18nextProvider i18n={i18n}>
+				<StyledEngineProvider enableCssLayer>
+					<GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
+					<WaitForOBR>
+						<RouterProvider router={router} />
+					</WaitForOBR>
+				</StyledEngineProvider>
+			</I18nextProvider>
 		</StrictMode>,
 	);
 }

@@ -8,20 +8,22 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 export const Route = createRootRoute({
-  component: () => (
-    <>
-      <Outlet />
-      <TanStackDevtools
-        config={{
-          position: "top-right",
-        }}
-        plugins={[
-          {
-            name: "Tanstack Router",
-            render: <TanStackRouterDevtoolsPanel />,
-          },
-        ]}
-      />
-    </>
-  ),
+	component: () => (
+		<>
+			<Outlet />
+			<TanStackDevtools
+				config={{
+					position: "top-right",
+					hideUntilHover: true,
+					defaultOpen: false,
+				}}
+				plugins={[
+					{
+						name: "Tanstack Router",
+						render: <TanStackRouterDevtoolsPanel />,
+					},
+				]}
+			/>
+		</>
+	),
 });

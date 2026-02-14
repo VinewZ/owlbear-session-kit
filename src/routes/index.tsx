@@ -1,9 +1,9 @@
 import OBR, { type ContextMenuContext } from "@owlbear-rodeo/sdk";
 import { createFileRoute } from "@tanstack/react-router";
-// import * as Y from "yjs";
 import {
 	ATTACH_SHEET_CONTEXT_MENU_ID,
-	RIGHT_SHEET_POPOVER_ID,
+	DEFAULT_SHEET_POPOVER_SIZE,
+	SHEET_POPVER_ID,
 } from "@/lib/constants";
 
 export const Route = createFileRoute("/")({
@@ -20,10 +20,10 @@ function App() {
 			return;
 		}
 		OBR.popover.open({
-			id: RIGHT_SHEET_POPOVER_ID,
+			id: SHEET_POPVER_ID,
 			url: `/sheet/${context.items[0].id}`,
-			height: 500,
-			width: 600,
+			height: DEFAULT_SHEET_POPOVER_SIZE.height,
+			width: DEFAULT_SHEET_POPOVER_SIZE.width,
 			disableClickAway: true,
 			anchorOrigin: {
 				horizontal: "RIGHT",
@@ -45,10 +45,6 @@ function App() {
 		],
 		onClick: handleOBKClick,
 	});
-
-  window.addEventListener("message", e => {
-    console.log(e)
-  })
 
 	return (
 		<div>

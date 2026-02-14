@@ -1,18 +1,17 @@
 import { Button } from "@mui/material";
 import { Loader2, Upload as UploadIcon } from "lucide-react";
 import { useRef } from "react";
-import type * as Y from "yjs";
+import type { CharacterT } from "@/hooks/pdf/parser";
 import { use5eSheetParser } from "@/hooks/pdf/use-5e-sheet-parser";
 import { useToken } from "@/lib/obr/hooks/use-token";
 import { logger } from "@/lib/utils";
-import { replaceSheetFromJSON } from "@/lib/yjs/helpers/replace-sheet-from-json";
 
 interface UploadProps {
 	sheetId: string;
-	ydoc: Y.Doc;
+	onUpload: (character: CharacterT) => Promise<void>;
 }
 
-export function Upload({ sheetId, ydoc }: UploadProps) {
+export function Upload({ sheetId, onUpload }: UploadProps) {
 	const { isLoading, parsePdf } = use5eSheetParser();
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const { token } = useToken(sheetId);
@@ -35,13 +34,12 @@ export function Upload({ sheetId, ydoc }: UploadProps) {
 
 		try {
 			const character = await parsePdf(file);
-			if (!character) return logger.error("Parsed PDF is empty");
 			if (!character) {
 				logger.error("Parsed PDF is empty");
 				return;
 			}
 
-			replaceSheetFromJSON(ydoc, sheetId, character);
+			await onUpload(character);
 		} catch (err) {
 			logger.error("Unable to parse PDF:", err);
 			alert("Failed to parse PDF. Please try again.");
@@ -50,7 +48,6 @@ export function Upload({ sheetId, ydoc }: UploadProps) {
 
 	return (
 		<div className="inline-block">
-			{/* Hidden file input */}
 			<input
 				ref={fileInputRef}
 				type="file"

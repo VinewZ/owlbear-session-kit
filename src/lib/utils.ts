@@ -9,6 +9,7 @@ const LOG_PREFIXES = {
 	WARNING: "WARN",
 	ERROR: "ERROR",
 	SUCCESS: "SUCCESS",
+	LOG: "LOG",
 };
 
 type LogLevel = keyof typeof LOG_PREFIXES;
@@ -28,6 +29,8 @@ function logMessage(level: LogLevel, message: string, ...args: unknown[]) {
 }
 
 export const logger = {
+	log: (message: string, ...args: unknown[]) =>
+		logMessage("LOG", message, ...args),
 	warn: (message: string, ...args: unknown[]) =>
 		logMessage("WARNING", message, ...args),
 	error: (message: string, ...args: unknown[]) =>
@@ -35,33 +38,3 @@ export const logger = {
 	success: (message: string, ...args: unknown[]) =>
 		logMessage("SUCCESS", message, ...args),
 };
-
-// Debug utilities
-export const DEBUG_WEBRTC = import.meta.env.VITE_DEBUG_WEBRTC === "true";
-export const DEBUG_YJS = import.meta.env.VITE_DEBUG_YJS === "true";
-
-export function debugLog(context: string, ...args: unknown[]) {
-	const debugMap: Record<string, boolean> = {
-		webrtc: DEBUG_WEBRTC,
-		yjs: DEBUG_YJS,
-	};
-
-	const shouldLog = debugMap[context.toLowerCase()] ?? false;
-
-	if (shouldLog) {
-		console.log(`[${context}]`, new Date().toISOString(), ...args);
-	}
-}
-
-export function formatBytes(bytes: number): string {
-	if (bytes === 0) return "0 B";
-	const k = 1024;
-	const sizes = ["B", "KB", "MB", "GB"];
-	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return `${(bytes / k ** i).toFixed(2)} ${sizes[i]}`;
-}
-
-export function formatDuration(ms: number): string {
-	if (ms < 1000) return `${ms}ms`;
-	return `${(ms / 1000).toFixed(2)}s`;
-}

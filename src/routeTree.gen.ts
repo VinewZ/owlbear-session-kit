@@ -9,48 +9,82 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ExtensionsRouteRouteImport } from './routes/extensions/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SheetSheetIdRouteImport } from './routes/sheet/$sheetId'
+import { Route as ExtensionsDiceRouteImport } from './routes/extensions/dice'
+import { Route as ExtensionsSheetSheetIdRouteImport } from './routes/extensions/sheet/$sheetId'
 
+const ExtensionsRouteRoute = ExtensionsRouteRouteImport.update({
+  id: '/extensions',
+  path: '/extensions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SheetSheetIdRoute = SheetSheetIdRouteImport.update({
+const ExtensionsDiceRoute = ExtensionsDiceRouteImport.update({
+  id: '/dice',
+  path: '/dice',
+  getParentRoute: () => ExtensionsRouteRoute,
+} as any)
+const ExtensionsSheetSheetIdRoute = ExtensionsSheetSheetIdRouteImport.update({
   id: '/sheet/$sheetId',
   path: '/sheet/$sheetId',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ExtensionsRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/sheet/$sheetId': typeof SheetSheetIdRoute
+  '/extensions': typeof ExtensionsRouteRouteWithChildren
+  '/extensions/dice': typeof ExtensionsDiceRoute
+  '/extensions/sheet/$sheetId': typeof ExtensionsSheetSheetIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/sheet/$sheetId': typeof SheetSheetIdRoute
+  '/extensions': typeof ExtensionsRouteRouteWithChildren
+  '/extensions/dice': typeof ExtensionsDiceRoute
+  '/extensions/sheet/$sheetId': typeof ExtensionsSheetSheetIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/sheet/$sheetId': typeof SheetSheetIdRoute
+  '/extensions': typeof ExtensionsRouteRouteWithChildren
+  '/extensions/dice': typeof ExtensionsDiceRoute
+  '/extensions/sheet/$sheetId': typeof ExtensionsSheetSheetIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sheet/$sheetId'
+  fullPaths:
+    | '/'
+    | '/extensions'
+    | '/extensions/dice'
+    | '/extensions/sheet/$sheetId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sheet/$sheetId'
-  id: '__root__' | '/' | '/sheet/$sheetId'
+  to: '/' | '/extensions' | '/extensions/dice' | '/extensions/sheet/$sheetId'
+  id:
+    | '__root__'
+    | '/'
+    | '/extensions'
+    | '/extensions/dice'
+    | '/extensions/sheet/$sheetId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  SheetSheetIdRoute: typeof SheetSheetIdRoute
+  ExtensionsRouteRoute: typeof ExtensionsRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/extensions': {
+      id: '/extensions'
+      path: '/extensions'
+      fullPath: '/extensions'
+      preLoaderRoute: typeof ExtensionsRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -58,19 +92,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sheet/$sheetId': {
-      id: '/sheet/$sheetId'
+    '/extensions/dice': {
+      id: '/extensions/dice'
+      path: '/dice'
+      fullPath: '/extensions/dice'
+      preLoaderRoute: typeof ExtensionsDiceRouteImport
+      parentRoute: typeof ExtensionsRouteRoute
+    }
+    '/extensions/sheet/$sheetId': {
+      id: '/extensions/sheet/$sheetId'
       path: '/sheet/$sheetId'
-      fullPath: '/sheet/$sheetId'
-      preLoaderRoute: typeof SheetSheetIdRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/extensions/sheet/$sheetId'
+      preLoaderRoute: typeof ExtensionsSheetSheetIdRouteImport
+      parentRoute: typeof ExtensionsRouteRoute
     }
   }
 }
 
+interface ExtensionsRouteRouteChildren {
+  ExtensionsDiceRoute: typeof ExtensionsDiceRoute
+  ExtensionsSheetSheetIdRoute: typeof ExtensionsSheetSheetIdRoute
+}
+
+const ExtensionsRouteRouteChildren: ExtensionsRouteRouteChildren = {
+  ExtensionsDiceRoute: ExtensionsDiceRoute,
+  ExtensionsSheetSheetIdRoute: ExtensionsSheetSheetIdRoute,
+}
+
+const ExtensionsRouteRouteWithChildren = ExtensionsRouteRoute._addFileChildren(
+  ExtensionsRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SheetSheetIdRoute: SheetSheetIdRoute,
+  ExtensionsRouteRoute: ExtensionsRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { DICE_REGEX } from "@/lib/constants";
+import { DICE_REGEX, MAIN_BROADCAST_CHANNEL } from "@/lib/constants";
 
 export function useHighlightDice() {
 	const highlight = useCallback((text: string): React.ReactNode[] => {
@@ -10,6 +10,7 @@ export function useHighlightDice() {
 
 		for (const match of text.matchAll(DICE_REGEX)) {
 			const index = match.index ?? 0;
+			const notation = match[0];
 
 			result.push(text.slice(lastIndex, index));
 
@@ -20,14 +21,16 @@ export function useHighlightDice() {
 					className="bg-[#BB99FF] text-white rounded px-1 py-0.5 cursor-pointer"
 					onClick={(e) => {
 						e.stopPropagation();
-						alert(`Dice notation clicked: ${match[0]}`);
+						const channel = new BroadcastChannel(MAIN_BROADCAST_CHANNEL);
+						channel.postMessage({ type: "ROLL_DICE", notation });
+						channel.close();
 					}}
 				>
-					{match[0]}
+					{notation}
 				</button>,
 			);
 
-			lastIndex = index + match[0].length;
+			lastIndex = index + notation.length;
 		}
 
 		result.push(text.slice(lastIndex));

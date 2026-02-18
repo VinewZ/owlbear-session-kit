@@ -2,10 +2,10 @@ import GlobalStyles from "@mui/material/GlobalStyles";
 import { StyledEngineProvider } from "@mui/material/styles";
 import OBR from "@owlbear-rodeo/sdk";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
-import { StrictMode, useEffect, useState } from "react";
+import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
-// Import the generated route tree
+import { setupContextMenu } from "./lib/context-menu";
 import { routeTree } from "./routeTree.gen";
 
 import "./styles.css";
@@ -31,6 +31,11 @@ declare module "@tanstack/react-router" {
 	}
 }
 
+// Register context menu once at module level (before React mounts)
+if (OBR.isAvailable) {
+	OBR.onReady(setupContextMenu);
+}
+
 // Render the app
 const rootElement = document.getElementById("app");
 if (rootElement && !rootElement.innerHTML) {
@@ -41,9 +46,7 @@ if (rootElement && !rootElement.innerHTML) {
 				<StyledEngineProvider enableCssLayer>
 					<GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
 					<ThemeProvider>
-						<WaitForOBR>
-							<RouterProvider router={router} />
-						</WaitForOBR>
+						<RouterProvider router={router} />
 					</ThemeProvider>
 				</StyledEngineProvider>
 			</I18nextProvider>
@@ -51,26 +54,4 @@ if (rootElement && !rootElement.innerHTML) {
 	);
 }
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
-
-// React Provider that wraps children and waits for OBR to be ready
-function WaitForOBR({ children }: { children: React.ReactNode }) {
-	const [isOBRReady, setIsOBRReady] = useState(false);
-
-	useEffect(() => {
-		if (!OBR.isAvailable) return;
-
-		OBR.onReady(() => {
-			setIsOBRReady(true);
-		});
-	}, []);
-
-	if (!isOBRReady) {
-		return <div>Waiting For OBR...</div>;
-	}
-
-	return <>{children}</>;
-}

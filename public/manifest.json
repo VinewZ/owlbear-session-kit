@@ -5,8 +5,8 @@
   "action": {
     "title": "Session Kit",
     "icon": "/icons/owl-icon.svg",
-    "popover": "/",
-    "height": 600,
-    "width": 400
+    "popover": "/extensions/dice",
+    "height": 700,
+    "width": 650
   }
 }

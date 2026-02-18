@@ -79,6 +79,13 @@
 	"footer": {
 		"close": "Close"
 	},
+	"settings": {
+		"title": "Settings",
+		"language": "Language",
+		"theme": "Theme",
+		"light": "Light",
+		"dark": "Dark"
+	},
 	"common": {
 		"minimize": "Minimize",
 		"maximize": "Maximize"

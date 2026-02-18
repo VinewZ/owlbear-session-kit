@@ -37,11 +37,11 @@ export function JsonInput({
 			    drives the height so both always match the text content */}
 			<span
 				aria-hidden
-				className="invisible whitespace-pre-wrap break-words p-1 [grid-area:1/1] pointer-events-none select-none"
+				className="invisible whitespace-pre-wrap wrap-break-word  p-1 [grid-area:1/1] pointer-events-none select-none"
 			>
 				{stringValue}{" "}
 			</span>
-			<Editable.Preview className="text-start whitespace-pre-wrap break-words cursor-pointer focus:bg-white/10 rounded-md p-1 [grid-area:1/1]">
+			<Editable.Preview className="text-start whitespace-pre-wrap wrap-break-word cursor-pointer focus:bg-white/10 rounded-md p-1 [grid-area:1/1]">
 				{displayContent}
 			</Editable.Preview>
 			<Editable.Input

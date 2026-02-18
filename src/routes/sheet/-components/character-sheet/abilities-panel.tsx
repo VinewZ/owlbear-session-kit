@@ -25,7 +25,6 @@ export function AbilitiesPanel({ sheet, updateField }: AbilitiesPanelPropsT) {
 	const { t } = useTranslation();
 	return (
 		<Box className="bg-secondary overflow-y-auto flex flex-col gap-4 p-3">
-			{/* Ability Scores */}
 			<Box>
 				<Typography
 					variant="overline"
@@ -40,7 +39,7 @@ export function AbilitiesPanel({ sheet, updateField }: AbilitiesPanelPropsT) {
 							<Paper
 								key={ability}
 								variant="outlined"
-								className="px-3 py-2 flex items-center justify-between gap-2"
+								className="px-3 py-2 flex items-center justify-between gap-2 dark:bg-background/40"
 							>
 								<Typography
 									variant="caption"
@@ -85,7 +84,6 @@ export function AbilitiesPanel({ sheet, updateField }: AbilitiesPanelPropsT) {
 				</Box>
 			</Box>
 
-			{/* Skills */}
 			<Box>
 				<Typography
 					variant="overline"

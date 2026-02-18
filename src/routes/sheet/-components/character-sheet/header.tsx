@@ -15,7 +15,7 @@ export function Header({ sheet, sheetId, updateField }: HeaderPropsT) {
 	const { token, loading: tokenLoading } = useToken(sheetId);
 
 	return (
-		<Box className="bg-primary text-primary-foreground flex items-center justify-between px-4 py-3 gap-4">
+		<Box className="bg-primary dark:bg-primary-foreground text-primary-foreground dark:text-primary flex items-center justify-between px-4 py-3 gap-4">
 			<Box className="flex items-center gap-3 min-w-0">
 				{tokenLoading ? (
 					<Skeleton
@@ -26,7 +26,7 @@ export function Header({ sheet, sheetId, updateField }: HeaderPropsT) {
 					/>
 				) : (
 					<Box
-						className="shrink-0 rounded-full overflow-hidden border-2 border-primary-foreground/30"
+						className="shrink-0 rounded-full overflow-hidden border-2 border-primary-foreground/30 dark:border-primary-foreground/30"
 						style={{ width: 56, height: 56 }}
 					>
 						{token?.image?.url ? (
@@ -49,10 +49,10 @@ export function Header({ sheet, sheetId, updateField }: HeaderPropsT) {
 						value={sheet.identity.name}
 						onChange={(v) => updateField(["identity", "name"], v)}
 					/>
-					<Box className="flex items-baseline gap-1 flex-wrap leading-snug">
+					<Box className="flex items-baseline gap-1 flex-wrap leading-snug ml-1">
 						<Typography
 							variant="caption"
-							className="text-primary-foreground/70"
+							className="text-primary-foreground/70 dark:text-primary"
 						>
 							Level
 						</Typography>
@@ -89,7 +89,7 @@ export function Header({ sheet, sheetId, updateField }: HeaderPropsT) {
 			<Box className="shrink-0 text-right">
 				<Typography
 					variant="overline"
-					className="text-primary-foreground/60 block"
+					className="text-primary-foreground/60 block dark:text-primary"
 				>
 					Experience
 				</Typography>

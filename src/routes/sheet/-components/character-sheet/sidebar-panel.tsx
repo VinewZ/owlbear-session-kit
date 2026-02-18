@@ -49,7 +49,7 @@ export function SidebarPanel({ sheet, updateField }: SidebarPanelPropsT) {
   return (
     <Box className="bg-secondary overflow-y-auto flex flex-col gap-5 p-3">
       <Section title={t("character.info")}>
-        <Paper variant="outlined">
+        <Paper variant="outlined" className="dark:bg-background/40">
           <InfoRow
             label={t("character.race")}
             value={sheet.identity.species}
@@ -76,7 +76,7 @@ export function SidebarPanel({ sheet, updateField }: SidebarPanelPropsT) {
             <Paper
               key={`sidebar-spell-${spell.name ?? i}`}
               variant="outlined"
-              className="px-3 py-2"
+              className="px-3 py-2 dark:bg-background/40"
             >
               <Box className="flex items-center justify-between">
                 <JsonInput
@@ -104,7 +104,7 @@ export function SidebarPanel({ sheet, updateField }: SidebarPanelPropsT) {
         </Stack>
 
         {sheet.spellcasting && (
-          <Paper variant="outlined" className="mt-3">
+          <Paper variant="outlined" className="mt-3 dark:bg-background/40">
             <InfoRow
               label={t("combat.ability")}
               value={sheet.spellcasting.ability}
@@ -133,7 +133,7 @@ export function SidebarPanel({ sheet, updateField }: SidebarPanelPropsT) {
       </Section>
 
       <Section title={t("character.equipment")}>
-        <Paper variant="outlined" className="p-2">
+        <Paper variant="outlined" className="p-2 dark:bg-background/40">
           <JsonInput
             className="w-full text-sm"
             value={sheet.equipment}
@@ -143,7 +143,7 @@ export function SidebarPanel({ sheet, updateField }: SidebarPanelPropsT) {
       </Section>
 
       <Section title={t("character.languages")}>
-        <Paper variant="outlined" className="p-2">
+        <Paper variant="outlined" className="p-2 dark:bg-background/40">
           <Box className="flex flex-wrap gap-1 mb-2">
             {sheet.identity.languages
               .split(/[,;]+/)
@@ -168,7 +168,7 @@ export function SidebarPanel({ sheet, updateField }: SidebarPanelPropsT) {
       </Section>
 
       <Section title={t("character.proficiencies")}>
-        <Paper variant="outlined" className="p-2">
+        <Paper variant="outlined" className="p-2 dark:bg-background/40">
           <JsonInput
             className="w-full text-sm"
             value={sheet.proficiencies}
@@ -178,7 +178,7 @@ export function SidebarPanel({ sheet, updateField }: SidebarPanelPropsT) {
       </Section>
 
       <Section title={t("character.tools")}>
-        <Paper variant="outlined" className="p-2">
+        <Paper variant="outlined" className="p-2 bg-background/40">
           <JsonInput
             className="w-full text-sm"
             value={sheet.tool}

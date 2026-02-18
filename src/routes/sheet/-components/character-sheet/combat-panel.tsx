@@ -41,7 +41,6 @@ export function CombatPanel({ sheet, updateField }: CombatPanelPropsT) {
 
 	return (
 		<Box className="flex flex-col gap-6 px-4 py-4 overflow-y-auto">
-			{/* Top 3 stats */}
 			<Box className="grid grid-cols-3 gap-3">
 				{COMBAT_STATS.map(({ labelKey, field, primary }) => (
 					<Paper
@@ -67,7 +66,6 @@ export function CombatPanel({ sheet, updateField }: CombatPanelPropsT) {
 				))}
 			</Box>
 
-			{/* HP + Proficiency */}
 			<Box className="grid grid-cols-[1fr_auto] gap-3">
 				<HitPointsCard
 					sheet={sheet}
@@ -92,7 +90,6 @@ export function CombatPanel({ sheet, updateField }: CombatPanelPropsT) {
 				</Paper>
 			</Box>
 
-			{/* Attacks & Spellcasting */}
 			<Box>
 				<Typography variant="overline" className="block mb-1">
 					{t("combat.attacksSpellcasting")}
@@ -114,7 +111,6 @@ export function CombatPanel({ sheet, updateField }: CombatPanelPropsT) {
 				)}
 			</Box>
 
-			{/* Class Features */}
 			<Box>
 				<Typography variant="overline" className="block mb-1">
 					{t("combat.classFeatures")}

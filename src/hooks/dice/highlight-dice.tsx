@@ -23,7 +23,7 @@ export function useHighlightDice() {
 					key={`dice-${index}`}
 					type="button"
 					className="text-white rounded px-1 py-0.5 cursor-pointer"
-          style={{background: accentColor || ""}}
+          style={{background: accentColor}}
 					onClick={(e) => {
 						e.stopPropagation();
 						const channel = new BroadcastChannel(MAIN_BROADCAST_CHANNEL);

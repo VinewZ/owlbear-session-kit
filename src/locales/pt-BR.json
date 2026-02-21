@@ -1,13 +1,15 @@
 {
 	"abilities": {
 		"abilitiesSkills": "Habilidades & Perícias",
+		"mod": "MOD",
+		"score": "VALOR",
+		"save": "SALVA",
 		"strength": "Força",
 		"dexterity": "Destreza",
 		"constitution": "Constituição",
 		"intelligence": "Inteligência",
 		"wisdom": "Sabedoria",
 		"charisma": "Carisma",
-		"save": "Save",
 		"str": "FOR",
 		"dex": "DES",
 		"con": "CON",

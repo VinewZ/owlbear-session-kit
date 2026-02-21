@@ -1,13 +1,15 @@
 {
 	"abilities": {
 		"abilitiesSkills": "Abilities & Skills",
+		"mod": "MOD",
+		"score": "SCORE",
+		"save": "SAVE",
 		"strength": "Strength",
 		"dexterity": "Dexterity",
 		"constitution": "Constitution",
 		"intelligence": "Intelligence",
 		"wisdom": "Wisdom",
 		"charisma": "Charisma",
-		"save": "Save",
 		"str": "STR",
 		"dex": "DEX",
 		"con": "CON",

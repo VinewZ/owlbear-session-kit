@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ACCENT_COLOR_KEY } from "@/lib/constants";
 
 export function useAccentColor() {
-  const [accentColor, setAccentColor] = useState<string>("");
+  const [accentColor, setAccentColor] = useState<string>("#BB99FF");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -1,12 +1,12 @@
 import { CloseFullscreen, OpenInFull } from "@mui/icons-material";
 import { Box, Button, Grid } from "@mui/material";
+import { darken } from "@mui/material/styles";
 import OBR from "@owlbear-rodeo/sdk";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SettingsPopover } from "@/components/settings-popover";
-import { DEFAULT_SHEET_POPOVER_SIZE, SHEET_POPOVER_ID } from "@/lib/constants";
-import { darken } from "@mui/material/styles";
 import { useAccentColor } from "@/hooks/use-accent-color";
+import { DEFAULT_SHEET_POPOVER_SIZE, SHEET_POPOVER_ID } from "@/lib/constants";
 
 export function Footer() {
   const [isMinimized, setIsMinimized] = useState(false);
@@ -45,7 +45,7 @@ export function Footer() {
       className="h-12 items-center justify-between fixed bottom-0 left-0 right-0 border-t"
       sx={{
         bgcolor: (theme) => darken(theme.palette.background.paper, 0.06),
-        borderColor: accentColor
+        borderColor: accentColor,
       }}
     >
       <Box className="flex items-center">
@@ -65,9 +65,14 @@ export function Footer() {
       <Button
         onClick={closeSheet}
         variant="contained"
-        className="rounded-lg px-4 py-2 mr-4 text-white"
         sx={{
-          bgcolor: () => darken(accentColor, 0.2),
+          borderRadius: 1,
+          px: 2,
+          py: 1,
+          mr: 2,
+          color: "white",
+          bgcolor: (theme) =>
+            darken(accentColor || theme.palette.action.active, 0.2),
         }}
       >
         {t("footer.close")}

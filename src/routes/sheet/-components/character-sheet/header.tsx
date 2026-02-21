@@ -38,7 +38,7 @@ export function Header({ sheet, sheetId, updateField }: HeaderProps) {
             sx={{
               width: 70,
               height: 70,
-              bgcolor: () => darken(accentColor, 0.6),
+              bgcolor: (theme) => darken(accentColor || theme.palette.background.default, 0.6),
             }}
           >
             {token?.image?.url ? (

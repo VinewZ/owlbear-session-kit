@@ -1,5 +1,6 @@
 import OBR from "@owlbear-rodeo/sdk";
 import { createContext, useContext, useEffect, useState } from "react";
+import { useGlobalSheetSync } from "@/hooks/use-global-sheet-sync";
 
 type OBRContextValue = {
 	isReady: boolean;
@@ -17,6 +18,8 @@ type OBRGateProps = {
 
 export function OBRGate({ children }: OBRGateProps) {
 	const [isReady, setIsReady] = useState(false);
+
+	useGlobalSheetSync();
 
 	useEffect(() => {
 		if (!OBR.isAvailable) {

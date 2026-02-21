@@ -13,17 +13,12 @@ interface BroadcastMessage {
 	timestamp?: number;
 }
 
-/**
- * Simple hook to manage a character sheet with broadcast sync
- * Loads from IndexedDB on mount, syncs with other users via OBR broadcast
- */
 export function useCharacterSheet(sheetId: string) {
 	const [sheet, setSheet] = useState<CharacterT | null>(null);
 	const [loading, setLoading] = useState(true);
 	const isApplyingRemote = useRef(false);
 	const lastUpdateTimestamp = useRef(0);
 
-	// Load sheet from IndexedDB on mount
 	useEffect(() => {
 		let mounted = true;
 
@@ -49,7 +44,6 @@ export function useCharacterSheet(sheetId: string) {
 		};
 	}, [sheetId]);
 
-	// Save sheet to IndexedDB
 	const save = useCallback(
 		async (data: CharacterT) => {
 			try {
@@ -63,7 +57,6 @@ export function useCharacterSheet(sheetId: string) {
 		[sheetId],
 	);
 
-	// Broadcast update to other users (debounced)
 	const broadcastUpdate = useDebounceCallback(async (data: CharacterT) => {
 		if (isApplyingRemote.current) return;
 
@@ -86,15 +79,14 @@ export function useCharacterSheet(sheetId: string) {
 		);
 	}, 300);
 
-	// Update sheet (local state + save to IndexedDB + broadcast)
 	const update = useCallback(
 		async (data: CharacterT) => {
 			if (isApplyingRemote.current) return;
 
-			setSheet(data); // Optimistic update
+			setSheet(data);
 			try {
 				await saveSheet(sheetId, data);
-				broadcastUpdate(data); // Broadcast to other users
+				broadcastUpdate(data);
 			} catch (err) {
 				console.error("Failed to save sheet:", err);
 			}
@@ -102,56 +94,34 @@ export function useCharacterSheet(sheetId: string) {
 		[sheetId, broadcastUpdate],
 	);
 
-	// Listen for broadcasts from other users
 	useEffect(() => {
+		if (!OBR.isAvailable) return;
+
 		const unsubscribe = OBR.broadcast.onMessage(
 			MAIN_BROADCAST_CHANNEL,
 			async (event) => {
 				try {
 					const message: BroadcastMessage = JSON.parse(event.data as string);
 
-					// Ignore messages for other sheets
 					if (message.sheetId !== sheetId) return;
+					if (message.type !== "update" || !message.data) return;
 
 					const playerId = await OBR.player.getId();
-
-					// Ignore our own messages
 					if (message.senderId === playerId) return;
 
-					if (message.type === "update" && message.data) {
-						// Ignore old updates (already applied)
-						if (
-							message.timestamp &&
-							message.timestamp <= lastUpdateTimestamp.current
-						) {
-							return;
-						}
-
-						// Apply update from another user
-						isApplyingRemote.current = true;
-						setSheet(message.data);
-						await saveSheet(sheetId, message.data);
-						if (message.timestamp) {
-							lastUpdateTimestamp.current = message.timestamp;
-						}
-						isApplyingRemote.current = false;
-					} else if (message.type === "request-sync") {
-						// Another user is requesting the current state
-						if (sheet) {
-							const syncMessage: BroadcastMessage = {
-								type: "update",
-								sheetId,
-								data: sheet,
-								senderId: playerId,
-								timestamp: Date.now(),
-							};
-							await OBR.broadcast.sendMessage(
-								MAIN_BROADCAST_CHANNEL,
-								JSON.stringify(syncMessage),
-								{ destination: "ALL" },
-							);
-						}
+					if (
+						message.timestamp &&
+						message.timestamp <= lastUpdateTimestamp.current
+					) {
+						return;
 					}
+
+					isApplyingRemote.current = true;
+					setSheet(message.data);
+					if (message.timestamp) {
+						lastUpdateTimestamp.current = message.timestamp;
+					}
+					isApplyingRemote.current = false;
 				} catch (err) {
 					console.error("Failed to handle broadcast:", err);
 				}
@@ -161,11 +131,10 @@ export function useCharacterSheet(sheetId: string) {
 		return () => {
 			unsubscribe();
 		};
-	}, [sheetId, sheet]);
+	}, [sheetId]);
 
-	// Request sync from other users if no local data
 	useEffect(() => {
-		if (!loading && !sheet) {
+		if (!loading && !sheet && OBR.isAvailable) {
 			const requestSync = async () => {
 				const playerId = await OBR.player.getId();
 				const message: BroadcastMessage = {

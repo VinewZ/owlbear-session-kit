@@ -1,17 +1,16 @@
 import { Box, Skeleton, Typography } from "@mui/material";
-
-import type { CharacterT } from "@/hooks/pdf/parser";
+import { JsonInput } from "@/components/json-input";
+import type { UpdateFieldFn } from "@/hooks/use-sheet-updater";
 import { useToken } from "@/lib/obr/hooks/use-token";
-import { JsonInput } from "./json-input";
-import type { UpdateFieldFn } from "./use-sheet-updater";
+import type { CharacterT } from "@/types";
 
-type HeaderPropsT = {
+type HeaderProps = {
 	sheet: CharacterT;
 	sheetId: string;
 	updateField: UpdateFieldFn;
 };
 
-export function Header({ sheet, sheetId, updateField }: HeaderPropsT) {
+export function Header({ sheet, sheetId, updateField }: HeaderProps) {
 	const { token, loading: tokenLoading } = useToken(sheetId);
 
 	return (

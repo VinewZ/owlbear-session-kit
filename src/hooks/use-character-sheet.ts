@@ -1,17 +1,9 @@
 import OBR from "@owlbear-rodeo/sdk";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
-import type { CharacterT } from "@/hooks/pdf/parser";
 import { MAIN_BROADCAST_CHANNEL } from "@/lib/constants";
 import { getSheet, saveSheet } from "@/lib/storage/indexeddb";
-
-interface BroadcastMessage {
-	type: "update" | "request-sync";
-	sheetId: string;
-	data?: CharacterT;
-	senderId?: string;
-	timestamp?: number;
-}
+import type { BroadcastMessage, CharacterT } from "@/types";
 
 export function useCharacterSheet(sheetId: string) {
 	const [sheet, setSheet] = useState<CharacterT | null>(null);
@@ -103,24 +95,17 @@ export function useCharacterSheet(sheetId: string) {
 				try {
 					const message: BroadcastMessage = JSON.parse(event.data as string);
 
+					if (message.type !== "update") return;
 					if (message.sheetId !== sheetId) return;
-					if (message.type !== "update" || !message.data) return;
 
 					const playerId = await OBR.player.getId();
 					if (message.senderId === playerId) return;
 
-					if (
-						message.timestamp &&
-						message.timestamp <= lastUpdateTimestamp.current
-					) {
-						return;
-					}
+					if (message.timestamp <= lastUpdateTimestamp.current) return;
 
 					isApplyingRemote.current = true;
 					setSheet(message.data);
-					if (message.timestamp) {
-						lastUpdateTimestamp.current = message.timestamp;
-					}
+					lastUpdateTimestamp.current = message.timestamp;
 					isApplyingRemote.current = false;
 				} catch (err) {
 					console.error("Failed to handle broadcast:", err);
@@ -132,27 +117,6 @@ export function useCharacterSheet(sheetId: string) {
 			unsubscribe();
 		};
 	}, [sheetId]);
-
-	useEffect(() => {
-		if (!loading && !sheet && OBR.isAvailable) {
-			const requestSync = async () => {
-				const playerId = await OBR.player.getId();
-				const message: BroadcastMessage = {
-					type: "request-sync",
-					sheetId,
-					senderId: playerId,
-				};
-
-				await OBR.broadcast.sendMessage(
-					MAIN_BROADCAST_CHANNEL,
-					JSON.stringify(message),
-					{ destination: "ALL" },
-				);
-			};
-
-			requestSync();
-		}
-	}, [loading, sheet, sheetId]);
 
 	return {
 		sheet,

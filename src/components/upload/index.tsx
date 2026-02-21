@@ -1,10 +1,10 @@
 import { Button } from "@mui/material";
 import { Loader2, Upload as UploadIcon } from "lucide-react";
 import { useRef } from "react";
-import type { CharacterT } from "@/hooks/pdf/parser";
 import { use5eSheetParser } from "@/hooks/pdf/use-5e-sheet-parser";
 import { useToken } from "@/lib/obr/hooks/use-token";
 import { logger } from "@/lib/utils";
+import type { CharacterT } from "@/types";
 
 interface UploadProps {
 	sheetId: string;

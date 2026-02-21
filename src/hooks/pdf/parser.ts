@@ -1,73 +1,9 @@
-export type CharacterT = {
-	identity: {
-		name: string;
-		class: string;
-		subclass: string;
-		level: number;
-		experience: number;
-		background: string;
-		species: string;
-		traits: string;
-		feats: string;
-		personality: string;
-		alignment: string;
-		appearance: string;
-		languages: string;
-		passivePerception: number;
-	};
+import type { Abilities, CharacterT, Spell, Weapon } from "@/types";
 
-	equipment: string;
+export type { CharacterT } from "@/types";
 
-	abilities: Record<
-		string,
-		{
-			score?: number;
-			mod?: number;
-			save?: number;
-		}
-	>;
+const ABILITIES = ["STR", "DEX", "CON", "INT", "WIS", "CHA"] as const;
 
-	skills: Record<string, number>;
-
-	combat: {
-		maxHP?: number;
-		currentHP?: number;
-		tempHP?: number;
-		armorClass?: number;
-		speed?: string;
-		initiative?: number;
-		proficiencyBonus?: number;
-	};
-
-	weapons: Weapon[];
-	spellcasting?: Spellcasting;
-	spells: Spell[];
-	classFeatures: string;
-	proficiencies: string;
-	tool: string;
-};
-
-type Weapon = {
-	name?: string;
-	damage?: string;
-	notes?: string;
-	bonus?: string;
-};
-type Spell = {
-	name?: string;
-	level?: number;
-	range?: string;
-	castingTime?: string;
-	notes?: string;
-};
-type Spellcasting = {
-	ability?: string;
-	saveDC?: number;
-	attackBonus?: string;
-	mod?: string;
-};
-
-const ABILITIES = ["STR", "DEX", "CON", "INT", "WIS", "CHA"];
 const SKILLS = [
 	"ACROBATICS",
 	"ANIMAL HANDLING",
@@ -87,7 +23,9 @@ const SKILLS = [
 	"SLEIGHT OF HAND",
 	"STEALTH",
 	"SURVIVAL",
-];
+] as const;
+type SkillKey = (typeof SKILLS)[number];
+
 const WEAPON_FIELD_REGEX =
 	/^(NAME|DAMAGE\/TYPE|NOTES|BONUS\/DC)\s-\sWEAPON\s(\d+)$/;
 
@@ -100,8 +38,13 @@ const multiLineSplit = (v: string) =>
 		.filter((line) => line.trim() !== "")
 		.join("\r\n");
 
-export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
-	const char: CharacterT = {
+function createEmptyCharacter(): CharacterT {
+	const abilities: Abilities = {};
+	for (const ability of ABILITIES) {
+		abilities[ability] = {};
+	}
+
+	return {
 		identity: {
 			name: "",
 			class: "",
@@ -118,11 +61,9 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
 			languages: "",
 			passivePerception: 0,
 		},
-
-		abilities: {},
+		abilities,
 		skills: {},
 		combat: {},
-
 		weapons: [],
 		spellcasting: {
 			ability: "",
@@ -136,12 +77,12 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
 		tool: "",
 		equipment: "",
 	};
+}
+
+export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
+	const char = createEmptyCharacter();
 	const weaponMap: Record<number, Weapon> = {};
 	const spellMap: Record<number, Spell> = {};
-
-	for (const ability of ABILITIES) {
-		char.abilities[ability] = {};
-	}
 
 	for (const [field, widgets] of Object.entries(form)) {
 		if (field.startsWith("Check Box")) continue;
@@ -150,8 +91,6 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
 
 			const value = widget.value.trim();
 			if (!value) continue;
-
-			/* ─────────── Dynamic Fields ─────────── */
 
 			const weaponMatch = field.match(WEAPON_FIELD_REGEX);
 			if (weaponMatch) {
@@ -220,7 +159,7 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
 			}
 			if (isAbility) continue;
 
-			if (SKILLS.includes(field)) {
+			if (SKILLS.includes(field as SkillKey)) {
 				char.skills[field] = Number(value);
 				continue;
 			}
@@ -230,9 +169,7 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
 				continue;
 			}
 
-			/* ──────────── Static Fields ─────────── */
 			switch (field) {
-				// Identity
 				case "Name":
 					char.identity.name = value;
 					break;
@@ -279,7 +216,6 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
 					char.identity.passivePerception = Number(value);
 					break;
 
-				// Combat
 				case "Armor Class":
 					char.combat.armorClass = Number(value);
 					break;
@@ -302,7 +238,6 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
 					char.combat.tempHP = Number(value) || 0;
 					break;
 
-				// Spellcasting
 				case "SPELL SAVE DC":
 					if (char.spellcasting) char.spellcasting.saveDC = Number(value);
 					break;
@@ -316,7 +251,6 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
 					if (char.spellcasting) char.spellcasting.mod = value;
 					break;
 
-				// Proficiencies
 				case "WEAPON PROF":
 					char.proficiencies = multiLineSplit(value);
 					break;

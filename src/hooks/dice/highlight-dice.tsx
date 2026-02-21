@@ -1,5 +1,7 @@
 import { useCallback } from "react";
-import { DICE_REGEX, MAIN_BROADCAST_CHANNEL } from "@/lib/constants";
+import { MAIN_BROADCAST_CHANNEL } from "@/lib/constants";
+
+const DICE_REGEX = /\b[1-9]\d*[dD](?:4|6|8|10|12|20|100)(?:[+-]\d+)?\b/g;
 
 export function useHighlightDice() {
 	const highlight = useCallback((text: string): React.ReactNode[] => {

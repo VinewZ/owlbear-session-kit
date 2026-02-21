@@ -3,7 +3,7 @@ import { Editable } from "@ark-ui/react/editable";
 import { useHighlightDice } from "@/hooks/dice/highlight-dice";
 import { cn } from "@/lib/utils";
 
-type JsonInputPropsT = {
+type JsonInputProps = {
 	className?: string;
 	value?: string | number;
 	onChange?: (value: string) => void;
@@ -15,7 +15,7 @@ export function JsonInput({
 	value,
 	onChange,
 	renderValue,
-}: JsonInputPropsT) {
+}: JsonInputProps) {
 	const highlight = useHighlightDice();
 
 	const stringValue =
@@ -33,11 +33,9 @@ export function JsonInput({
 			submitMode="blur"
 			className={cn("inline-grid max-w-full", className)}
 		>
-			{/* Invisible sizer — occupies same grid cell as preview/input,
-			    drives the height so both always match the text content */}
 			<span
 				aria-hidden
-				className="invisible whitespace-pre-wrap wrap-break-word  p-1 [grid-area:1/1] pointer-events-none select-none"
+				className="invisible whitespace-pre-wrap wrap-break-word p-1 [grid-area:1/1] pointer-events-none select-none"
 			>
 				{stringValue}{" "}
 			</span>

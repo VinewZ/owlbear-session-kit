@@ -1,11 +1,12 @@
-import type { CharacterT } from "@/hooks/pdf/parser";
+import type { UpdateFieldFn } from "@/hooks/use-sheet-updater";
+import { useSheetUpdater } from "@/hooks/use-sheet-updater";
+import type { CharacterT } from "@/types";
 import { AbilitiesPanel } from "./abilities-panel";
 import { CombatPanel } from "./combat-panel";
 import { Header } from "./header";
 import { SidebarPanel } from "./sidebar-panel";
-import { useSheetUpdater } from "./use-sheet-updater";
 
-type CharacterSheetPropsT = {
+type CharacterSheetProps = {
 	sheet: CharacterT;
 	sheetId: string;
 	update: (data: CharacterT) => void;
@@ -15,7 +16,7 @@ export function CharacterSheet({
 	sheet,
 	sheetId,
 	update,
-}: CharacterSheetPropsT) {
+}: CharacterSheetProps) {
 	const updateField = useSheetUpdater(sheet, update);
 
 	return (
@@ -29,3 +30,5 @@ export function CharacterSheet({
 		</div>
 	);
 }
+
+export type { UpdateFieldFn };

@@ -1,11 +1,11 @@
 import { Box, Paper, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import type { CharacterT } from "@/hooks/pdf/parser";
+import { JsonInput } from "@/components/json-input";
+import type { UpdateFieldFn } from "@/hooks/use-sheet-updater";
 import { SKILL_TO_ABILITY } from "@/lib/constants";
-import { JsonInput } from "./json-input";
-import type { UpdateFieldFn } from "./use-sheet-updater";
+import type { CharacterT } from "@/types";
 
-type AbilitiesPanelPropsT = {
+type AbilitiesPanelProps = {
 	sheet: CharacterT;
 	updateField: UpdateFieldFn;
 };
@@ -20,7 +20,7 @@ const SKILLS_BY_ABILITY = Object.entries(SKILL_TO_ABILITY).reduce<
 	return acc;
 }, {});
 
-export function AbilitiesPanel({ sheet, updateField }: AbilitiesPanelPropsT) {
+export function AbilitiesPanel({ sheet, updateField }: AbilitiesPanelProps) {
 	const { t } = useTranslation();
 	return (
 		<Box className="bg-secondary overflow-y-auto flex flex-col gap-4 p-3">

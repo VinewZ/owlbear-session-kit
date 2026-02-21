@@ -1,22 +1,21 @@
 import { Box, Chip, Divider, Paper, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { JsonInput } from "@/components/json-input";
+import type { UpdateFieldFn } from "@/hooks/use-sheet-updater";
+import type { CharacterT } from "@/types";
 
-import type { CharacterT } from "@/hooks/pdf/parser";
-import { JsonInput } from "./json-input";
-import type { UpdateFieldFn } from "./use-sheet-updater";
-
-type SidebarPanelPropsT = {
+type SidebarPanelProps = {
 	sheet: CharacterT;
 	updateField: UpdateFieldFn;
 };
 
-type InfoRowPropsT = {
+type InfoRowProps = {
 	label: string;
 	value: string | number | undefined;
 	onChange: (v: string) => void;
 };
 
-function InfoRow({ label, value, onChange }: InfoRowPropsT) {
+function InfoRow({ label, value, onChange }: InfoRowProps) {
 	return (
 		<Box className="flex items-center justify-between gap-2 px-3 py-1.5">
 			<Typography variant="body2" className="text-foreground/60 shrink-0">
@@ -31,9 +30,9 @@ function InfoRow({ label, value, onChange }: InfoRowPropsT) {
 	);
 }
 
-type SectionPropsT = { title: string; children: React.ReactNode };
+type SectionProps = { title: string; children: React.ReactNode };
 
-function Section({ title, children }: SectionPropsT) {
+function Section({ title, children }: SectionProps) {
 	return (
 		<Box>
 			<Typography variant="overline" className="text-foreground/60 block mb-2">
@@ -44,7 +43,7 @@ function Section({ title, children }: SectionPropsT) {
 	);
 }
 
-export function SidebarPanel({ sheet, updateField }: SidebarPanelPropsT) {
+export function SidebarPanel({ sheet, updateField }: SidebarPanelProps) {
 	const { t } = useTranslation();
 	return (
 		<Box className="bg-secondary overflow-y-auto flex flex-col gap-5 p-3">

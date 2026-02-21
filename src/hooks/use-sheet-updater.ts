@@ -1,4 +1,4 @@
-import type { CharacterT } from "@/hooks/pdf/parser";
+import type { CharacterT } from "@/types";
 
 export type UpdateFieldFn = (path: (string | number)[], value: unknown) => void;
 

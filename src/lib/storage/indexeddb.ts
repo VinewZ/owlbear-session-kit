@@ -1,5 +1,5 @@
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
-import type { CharacterT } from "@/hooks/pdf/parser";
+import type { CharacterT } from "@/types";
 import type { MetadataRecord, SheetRecord } from "./types";
 
 interface SessionKitDB extends DBSchema {

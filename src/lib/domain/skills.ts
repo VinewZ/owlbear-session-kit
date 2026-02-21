@@ -1,0 +1,27 @@
+export const SKILL_TO_ABILITY = {
+	ACROBATICS: "DEX",
+	"SLEIGHT OF HAND": "DEX",
+	STEALTH: "DEX",
+
+	ATHLETICS: "STR",
+
+	ARCANA: "INT",
+	HISTORY: "INT",
+	INVESTIGATION: "INT",
+	NATURE: "INT",
+	RELIGION: "INT",
+
+	ANIMAL_HANDLING: "WIS",
+	INSIGHT: "WIS",
+	MEDICINE: "WIS",
+	PERCEPTION: "WIS",
+	SURVIVAL: "WIS",
+
+	DECEPTION: "CHA",
+	INTIMIDATION: "CHA",
+	PERFORMANCE: "CHA",
+	PERSUASION: "CHA",
+} as const;
+
+export type SkillName = keyof typeof SKILL_TO_ABILITY;
+export type AbilityName = (typeof SKILL_TO_ABILITY)[SkillName];

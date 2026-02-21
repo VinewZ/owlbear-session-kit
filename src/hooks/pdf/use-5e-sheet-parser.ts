@@ -2,7 +2,8 @@ import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker.mjs?url";
 import { useState } from "react";
 import { logger } from "@/lib/utils";
-import { type CharacterT, parsePdfForm } from "./parser";
+import type { CharacterT } from "@/types";
+import { parsePdfForm } from "./parser";
 
 GlobalWorkerOptions.workerSrc = pdfWorker;
 

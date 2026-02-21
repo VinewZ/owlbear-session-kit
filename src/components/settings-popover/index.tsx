@@ -1,6 +1,12 @@
-import { Settings } from "@mui/icons-material";
+import { Delete, Settings } from "@mui/icons-material";
 import {
 	Box,
+	Button,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
 	Divider,
 	IconButton,
 	MenuItem,
@@ -13,10 +19,15 @@ import { useTranslation } from "react-i18next";
 import { ColorPicker } from "@/components/color-picker";
 import { useAccentColor } from "@/hooks/use-accent-color";
 
-export function SettingsPopover() {
+interface SettingsPopoverProps {
+	onDelete?: () => void;
+}
+
+export function SettingsPopover({ onDelete }: SettingsPopoverProps) {
 	const { t, i18n } = useTranslation();
 	const { accentColor, saveAccentColor, clearAccentColor } = useAccentColor();
 	const [anchor, setAnchor] = useState<HTMLButtonElement | null>(null);
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
 	function handleOpen(e: React.MouseEvent<HTMLButtonElement>) {
 		setAnchor(e.currentTarget);
@@ -89,7 +100,53 @@ export function SettingsPopover() {
 						/>
 					)}
 				</Box>
+
+				<Divider />
+
+				<Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+					<Typography variant="caption" sx={{ color: "text.secondary" }}>
+						{t("settings.dangerZone")}
+					</Typography>
+					<Button
+						color="error"
+						variant="outlined"
+						size="small"
+						startIcon={<Delete />}
+						onClick={() => setDeleteDialogOpen(true)}
+						fullWidth
+					>
+						{t("settings.deleteSheet")}
+					</Button>
+				</Box>
 			</Popover>
+
+			<Dialog
+				open={deleteDialogOpen}
+				onClose={() => setDeleteDialogOpen(false)}
+			>
+				<DialogTitle>{t("settings.deleteConfirmTitle")}</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						{t("settings.deleteConfirmMessage")}
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setDeleteDialogOpen(false)}>
+						{t("settings.cancel")}
+					</Button>
+					<Button
+						color="error"
+						variant="contained"
+						onClick={async () => {
+							setDeleteDialogOpen(false);
+							handleClose();
+							onDelete?.();
+						}}
+					>
+						{t("settings.delete")}
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</>
 	);
 }

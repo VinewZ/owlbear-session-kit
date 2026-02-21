@@ -9,106 +9,107 @@ import { SpellsTable } from "./spells-table";
 import { WeaponsTable } from "./weapons-table";
 
 type CombatPanelProps = {
-  sheet: CharacterT;
-  updateField: UpdateFieldFn;
+	sheet: CharacterT;
+	updateField: UpdateFieldFn;
 };
 
 const COMBAT_STATS = [
-  { labelKey: "combat.armorClass", field: "armorClass", primary: true },
-  { labelKey: "combat.initiative", field: "initiative", primary: false },
-  { labelKey: "combat.speed", field: "speed", primary: false },
+	{ labelKey: "combat.armorClass", field: "armorClass", primary: true },
+	{ labelKey: "combat.initiative", field: "initiative", primary: false },
+	{ labelKey: "combat.speed", field: "speed", primary: false },
 ] as const;
 
 export function CombatPanel({ sheet, updateField }: CombatPanelProps) {
-  const [combatTab, setCombatTab] = useState<"weapons" | "spells">("weapons");
-  const { t } = useTranslation();
+	const [combatTab, setCombatTab] = useState<"weapons" | "spells">("weapons");
+	const { t } = useTranslation();
 
-  const currentHP = sheet.combat.currentHP ?? 0;
-  const maxHP = sheet.combat.maxHP ?? 1;
-  const hpPercent = Math.min(100, Math.max(0, (currentHP / maxHP) * 100));
+	const currentHP = sheet.combat.currentHP ?? 0;
+	const maxHP = sheet.combat.maxHP ?? 1;
+	const hpPercent = Math.min(100, Math.max(0, (currentHP / maxHP) * 100));
 
-  return (
-    <Box className="flex flex-col gap-6 px-4 py-4 overflow-y-auto">
-      <Box className="grid grid-cols-3 gap-3">
-        {COMBAT_STATS.map(({ labelKey, field, primary }) => (
-          <Paper
-            key={field}
-            variant="outlined"
-            className={`p-4 flex flex-col items-center gap-1 ${primary ? "border-2 border-primary" : ""
-              }`}
-          >
-            <Typography
-              variant="overline"
-              className="text-foreground/60 leading-none text-center"
-            >
-              {t(labelKey)}
-            </Typography>
-            <JsonInput
-              className="text-4xl font-bold text-center"
-              value={sheet.combat[field]}
-              onChange={(v) => updateField(["combat", field], v)}
-            />
-          </Paper>
-        ))}
-      </Box>
+	return (
+		<Box className="flex flex-col gap-6 px-4 py-4 overflow-y-auto">
+			<Box className="grid grid-cols-3 gap-3">
+				{COMBAT_STATS.map(({ labelKey, field, primary }) => (
+					<Paper
+						key={field}
+						variant="outlined"
+						className={`p-4 flex flex-col items-center gap-1 ${
+							primary ? "border-2 border-primary" : ""
+						}`}
+					>
+						<Typography
+							variant="overline"
+							className="text-foreground/60 leading-none text-center"
+						>
+							{t(labelKey)}
+						</Typography>
+						<JsonInput
+							className="text-4xl font-bold text-center"
+							value={sheet.combat[field]}
+							onChange={(v) => updateField(["combat", field], v)}
+						/>
+					</Paper>
+				))}
+			</Box>
 
-      <Box className="grid grid-cols-[1fr_auto] gap-3">
-        <HitPointsCard
-          sheet={sheet}
-          hpPercent={hpPercent}
-          updateField={updateField}
-        />
-        <Paper
-          variant="outlined"
-          className="p-4 flex flex-col items-center justify-center min-w-24"
-        >
-          <Typography
-            variant="overline"
-            className="text-foreground/60 text-center leading-tight"
-          >
-            {t("combat.proficiency")}
-          </Typography>
-          <JsonInput
-            className="text-4xl font-bold text-center"
-            value={sheet.combat.proficiencyBonus}
-            onChange={(v) => updateField(["combat", "proficiencyBonus"], v)}
-          />
-        </Paper>
-      </Box>
+			<Box className="grid grid-cols-[1fr_auto] gap-3">
+				<HitPointsCard
+					sheet={sheet}
+					hpPercent={hpPercent}
+					updateField={updateField}
+				/>
+				<Paper
+					variant="outlined"
+					className="p-4 flex flex-col items-center justify-center min-w-24"
+				>
+					<Typography
+						variant="overline"
+						className="text-foreground/60 text-center leading-tight"
+					>
+						{t("combat.proficiency")}
+					</Typography>
+					<JsonInput
+						className="text-4xl font-bold text-center"
+						value={sheet.combat.proficiencyBonus}
+						onChange={(v) => updateField(["combat", "proficiencyBonus"], v)}
+					/>
+				</Paper>
+			</Box>
 
-      <Box>
-        <Typography variant="overline" className="block mb-1">
-          {t("combat.attacksSpellcasting")}
-        </Typography>
-        <Tabs
-          value={combatTab}
-          onChange={(_, v) => setCombatTab(v)}
-          className="mb-2"
-        >
-          <Tab value="weapons" label={t("combat.weapons")} />
-          <Tab value="spells" label={t("combat.spellsCantrips")} />
-        </Tabs>
+			<Box>
+				<Typography variant="overline" className="block mb-1">
+					{t("combat.attacksSpellcasting")}
+				</Typography>
+				<Tabs
+					value={combatTab}
+					onChange={(_, v) => setCombatTab(v)}
+					className="mb-2"
+				>
+					<Tab value="weapons" label={t("combat.weapons")} />
+					<Tab value="spells" label={t("combat.spellsCantrips")} />
+				</Tabs>
 
-        {combatTab === "weapons" && (
-          <WeaponsTable sheet={sheet} updateField={updateField} />
-        )}
-        {combatTab === "spells" && (
-          <SpellsTable sheet={sheet} updateField={updateField} />
-        )}
-      </Box>
+				{combatTab === "weapons" && (
+					<WeaponsTable sheet={sheet} updateField={updateField} />
+				)}
+				{combatTab === "spells" && (
+					<SpellsTable sheet={sheet} updateField={updateField} />
+				)}
+			</Box>
 
-      <Box>
-        <Typography variant="overline" className="block mb-1">
-          {t("combat.classFeatures")}
-        </Typography>
-        <Paper variant="outlined" className="p-3">
-          <JsonInput
-            className="w-full min-h-32"
-            value={sheet.classFeatures}
-            onChange={(v) => updateField(["classFeatures"], v)}
-          />
-        </Paper>
-      </Box>
-    </Box>
-  );
+			<Box>
+				<Typography variant="overline" className="block mb-1">
+					{t("combat.classFeatures")}
+				</Typography>
+				<Paper variant="outlined" className="p-3">
+					<JsonInput
+						className="w-full min-h-32"
+						value={sheet.classFeatures}
+						onChange={(v) => updateField(["classFeatures"], v)}
+					/>
+				</Paper>
+			</Box>
+		</Box>
+	);
 }

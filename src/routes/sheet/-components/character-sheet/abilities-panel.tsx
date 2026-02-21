@@ -57,7 +57,7 @@ export function AbilitiesPanel({ sheet, updateField }: AbilitiesPanelProps) {
 						<Paper key={ability} variant="outlined" sx={{ overflow: "hidden" }}>
 							<Box
 								sx={{
-                  position: "relative",
+									position: "relative",
 									display: "flex",
 									alignItems: "center",
 									justifyContent: "space-between",

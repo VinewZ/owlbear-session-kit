@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 import { MAIN_BROADCAST_CHANNEL } from "@/lib/constants";
 import { useChunkedBroadcast } from "@/lib/obr/hooks/use-chunked-broadcast";
-import { getSheet, saveSheet } from "@/lib/storage/indexeddb";
+import { deleteSheet, getSheet, saveSheet } from "@/lib/storage/indexeddb";
 import type { BroadcastMessage, CharacterT } from "@/types";
 
 export function useCharacterSheet(sheetId: string) {
@@ -120,10 +120,31 @@ export function useCharacterSheet(sheetId: string) {
 		};
 	}, [sheetId, listenMessage]);
 
+	const remove = useCallback(async () => {
+		try {
+			await deleteSheet(sheetId);
+			setSheet(null);
+			const playerId = await OBR.player.getId();
+			const message: BroadcastMessage = {
+				type: "delete",
+				sheetId,
+				senderId: playerId,
+			};
+			sendMessage({
+				channel: MAIN_BROADCAST_CHANNEL,
+				message: JSON.stringify(message),
+			});
+		} catch (err) {
+			console.error("Failed to delete sheet:", err);
+			throw err;
+		}
+	}, [sheetId, sendMessage]);
+
 	return {
 		sheet,
 		loading,
 		save,
 		update,
+		remove,
 	};
 }

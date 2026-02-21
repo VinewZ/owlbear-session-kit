@@ -2,7 +2,12 @@ import OBR from "@owlbear-rodeo/sdk";
 import { useEffect, useRef } from "react";
 import { MAIN_BROADCAST_CHANNEL } from "@/lib/constants";
 import { useChunkedBroadcast } from "@/lib/obr/hooks/use-chunked-broadcast";
-import { getAllSheets, getSheet, saveSheet } from "@/lib/storage/indexeddb";
+import {
+	deleteSheet,
+	getAllSheets,
+	getSheet,
+	saveSheet,
+} from "@/lib/storage/indexeddb";
 import type { BroadcastMessage } from "@/types";
 
 const lastUpdateTimestamps = new Map<string, number>();
@@ -25,6 +30,13 @@ export function useGlobalSheetSync() {
 
 			await saveSheet(message.sheetId, message.data);
 			lastUpdateTimestamps.set(message.sheetId, message.timestamp);
+		}
+
+		async function handleDelete(
+			message: Extract<BroadcastMessage, { type: "delete" }>,
+		) {
+			await deleteSheet(message.sheetId);
+			lastUpdateTimestamps.delete(message.sheetId);
 		}
 
 		async function handleRequestSync(
@@ -119,6 +131,8 @@ export function useGlobalSheetSync() {
 
 						if (message.type === "update") {
 							await handleUpdate(message);
+						} else if (message.type === "delete") {
+							await handleDelete(message);
 						} else if (message.type === "request-sync") {
 							await handleRequestSync(message);
 						} else if (message.type === "full-sync-request") {

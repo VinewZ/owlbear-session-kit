@@ -9,6 +9,11 @@ export type BroadcastMessage =
 			timestamp: number;
 	  }
 	| {
+			type: "delete";
+			sheetId: string;
+			senderId: string;
+	  }
+	| {
 			type: "request-sync";
 			sheetId: string;
 			senderId: string;

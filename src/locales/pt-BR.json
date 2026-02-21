@@ -83,7 +83,13 @@
 	"settings": {
 		"title": "Configurações",
 		"language": "Idioma",
-		"accentColor": "Cor de Destaque"
+		"accentColor": "Cor de Destaque",
+		"dangerZone": "Zona de Perigo",
+		"deleteSheet": "Excluir Ficha",
+		"deleteConfirmTitle": "Excluir Ficha de Personagem",
+		"deleteConfirmMessage": "Tem certeza de que deseja excluir esta ficha de personagem? Esta ação não pode ser desfeita.",
+		"cancel": "Cancelar",
+		"delete": "Excluir"
 	},
 	"common": {
 		"minimize": "Minimizar",

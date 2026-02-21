@@ -13,39 +13,39 @@ import * as sunsetPreviews from "./sunset";
 import * as walnutPreviews from "./walnut";
 
 const previews: Record<DiceStyle, Record<DiceType, string>> = {
-  GALAXY: galaxyPreviews,
-  GEMSTONE: gemstonePreviews,
-  GLASS: glassPreviews,
-  IRON: ironPreviews,
-  NEBULA: nebulaPreviews,
-  SUNRISE: sunrisePreviews,
-  SUNSET: sunsetPreviews,
-  WALNUT: walnutPreviews,
+	GALAXY: galaxyPreviews,
+	GEMSTONE: gemstonePreviews,
+	GLASS: glassPreviews,
+	IRON: ironPreviews,
+	NEBULA: nebulaPreviews,
+	SUNRISE: sunrisePreviews,
+	SUNSET: sunsetPreviews,
+	WALNUT: walnutPreviews,
 };
 
 interface PreviewImageProps {
-  size?: "small" | "medium" | "large";
+	size?: "small" | "medium" | "large";
 }
 
 const PreviewImage = styled("img", {
-  shouldForwardProp: (prop) => prop !== "size",
+	shouldForwardProp: (prop) => prop !== "size",
 })<PreviewImageProps>(({ size }) => ({
-  width: size === "small" ? "28px" : size === "medium" ? "34px" : "38px",
-  height: size === "small" ? "28px" : size === "medium" ? "34px" : "38px",
+	width: size === "small" ? "28px" : size === "medium" ? "34px" : "38px",
+	height: size === "small" ? "28px" : size === "medium" ? "34px" : "38px",
 }));
 
 type DiePreviewProps = {
-  diceType: DiceType;
-  diceStyle: DiceStyle;
-  size?: "small" | "medium" | "large";
+	diceType: DiceType;
+	diceStyle: DiceStyle;
+	size?: "small" | "medium" | "large";
 };
 
 export function DicePreview({ diceType, diceStyle, size }: DiePreviewProps) {
-  return (
-    <PreviewImage
-      src={previews[diceStyle][diceType]}
-      alt={`${diceStyle} ${diceType} preview`}
-      size={size}
-    />
-  );
+	return (
+		<PreviewImage
+			src={previews[diceStyle][diceType]}
+			alt={`${diceStyle} ${diceType} preview`}
+			size={size}
+		/>
+	);
 }

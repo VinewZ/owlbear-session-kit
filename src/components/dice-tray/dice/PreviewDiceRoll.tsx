@@ -102,7 +102,7 @@ export function PreviewDiceRoll() {
 				const r = dieThrow.rotation;
 				return (
 					<AnimatedDice
-						key={index}
+						key={die.id}
 						die={die}
 						p={p}
 						r={r}

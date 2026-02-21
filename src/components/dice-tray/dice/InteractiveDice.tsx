@@ -30,7 +30,10 @@ export function InteractiveDice(
 		die: Die;
 	},
 ) {
-	const diceRef = useRef<THREE.Group>(null);
+	const diceRef = useRef<THREE.Group | null>(null);
+	const setDiceRef = useCallback((node: THREE.Group | null) => {
+		diceRef.current = node;
+	}, []);
 	const [dragAnchor, setDragAnchor] = useState<DiceVector3 | null>(null);
 
 	const { invalidate, camera, size } = useThree();
@@ -65,7 +68,7 @@ export function InteractiveDice(
 				pointerDownPositionRef.current = { x: e.offsetX, y: e.offsetY };
 			}
 		},
-		[size.width, size.height],
+		[size.width, size.height, camera],
 	);
 
 	const reroll = useDiceRollStore((state) => state.reroll);
@@ -169,7 +172,7 @@ export function InteractiveDice(
 
 	useEffect(() => {
 		invalidate();
-	}, [dragAnchor]);
+	}, [invalidate]);
 
 	const { position } = useSpring({
 		position: (dragAnchor
@@ -185,7 +188,8 @@ export function InteractiveDice(
 		<animated.group position={position}>
 			<Dice
 				onPointerDown={handlePointerDown}
-				ref={diceRef as any}
+				// biome-ignore lint/suspicious/noExplicitAny: React 19 ref type compatibility issue with @react-three/fiber
+				ref={setDiceRef as any}
 				{...props}
 			></Dice>
 		</animated.group>
@@ -219,7 +223,7 @@ function findDragVelocity(history: DragState[]) {
 		avgSpeed / history.length;
 
 		const deltaLength = Math.sqrt(avgDx * avgDx + avgDz * avgDz);
-		if (!isNaN(deltaLength) && deltaLength !== 0) {
+		if (!Number.isNaN(deltaLength) && deltaLength !== 0) {
 			// Normalize drag delta
 			const direction = {
 				x: avgDx / deltaLength,

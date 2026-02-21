@@ -63,14 +63,17 @@ import type { Die } from "./Die";
  *
  */
 export interface Dice {
-  dice: (Die | Dice)[];
-  /**
-   * How to combine the dice for this roll (defaults to `SUM` if undefined)
-   */
-  combination?: "HIGHEST" | "LOWEST" | "SUM" | "NONE";
-  bonus?: number;
+	dice: (Die | Dice)[];
+	/**
+	 * How to combine the dice for this roll (defaults to `SUM` if undefined)
+	 */
+	combination?: "HIGHEST" | "LOWEST" | "SUM" | "NONE";
+	bonus?: number;
 }
 
-export function isDice(value: any): value is Dice {
-  return isPlainObject(value) && Array.isArray(value.dice);
+export function isDice(value: unknown): value is Dice {
+	return (
+		isPlainObject(value) &&
+		Array.isArray((value as Record<string, unknown>).dice)
+	);
 }

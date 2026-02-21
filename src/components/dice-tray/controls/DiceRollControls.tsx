@@ -145,7 +145,7 @@ function DicePickedControls() {
 				window.removeEventListener("pointerup", handlePointerUp);
 			};
 		}
-	}, [rollPressTime]);
+	}, [rollPressTime, setRollPressTime]);
 
 	const hasDice = useMemo(
 		() =>
@@ -173,7 +173,7 @@ function DicePickedControls() {
 					":focus": {
 						outline: 0,
 					},
-					":hover #dice-roll-button": hasDice
+					":hover .dice-roll-button": hasDice
 						? {
 								color: theme.palette.primary.contrastText,
 								width: "100px",
@@ -183,7 +183,7 @@ function DicePickedControls() {
 								backgroundColor: theme.palette.primary.main,
 							}
 						: {},
-					":active #dice-roll-button": hasDice
+					":active .dice-roll-button": hasDice
 						? {
 								backgroundColor: theme.palette.primary.dark,
 							}
@@ -208,6 +208,7 @@ function DicePickedControls() {
 					}}
 				>
 					<Button
+						className="dice-roll-button"
 						sx={{
 							position: "absolute",
 							top: "50%",
@@ -232,7 +233,6 @@ function DicePickedControls() {
 						endIcon={<RollIcon />}
 						variant="contained"
 						disabled={!hasDice}
-						id="dice-roll-button"
 						component="div"
 					>
 						Roll
@@ -323,7 +323,6 @@ function FinishedRollControls() {
 			<GradientOverlay top height={resultsExpanded ? 500 : undefined} />
 			<Box
 				sx={{
-          background: "red",
 					position: "absolute",
 					top: 0,
 					left: 0,

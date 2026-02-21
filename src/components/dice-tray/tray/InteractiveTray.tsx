@@ -26,7 +26,6 @@ export function InteractiveTray() {
 			width="calc(100vh / 2)"
 			overflow="hidden"
 			position="relative"
-			id="interactive-tray"
 			sx={{
 				"& canvas": {
 					touchAction: "manipulation",

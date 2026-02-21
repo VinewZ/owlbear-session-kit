@@ -63,7 +63,8 @@ export function DiceRoll({
 		return (
 			<group>
 				{dice?.map((die) => {
-					const dieTransform = finishedTransforms[die.id]!;
+					const dieTransform = finishedTransforms[die.id];
+					if (!dieTransform) return null;
 					const p = dieTransform.position;
 					const r = dieTransform.rotation;
 					return (

@@ -89,6 +89,18 @@ function sortDice(
 	});
 }
 
+function getDiceKey(dice: Dice, index: number): string {
+	const parts: string[] = [];
+	for (const d of dice.dice) {
+		if (isDie(d)) {
+			parts.push(d.id);
+		} else if (isDice(d)) {
+			parts.push(`[${getDiceKey(d, 0)}]`);
+		}
+	}
+	return `${index}-${parts.join("-")}-${dice.bonus ?? 0}`;
+}
+
 function DiceResultsExpanded({
 	diceRoll,
 	rollValues,
@@ -134,7 +146,11 @@ function DiceResultsExpanded({
 				)}
 			</Stack>
 			{dice.map((d, i) => (
-				<DiceResultsExpanded key={i} diceRoll={d} rollValues={rollValues} />
+				<DiceResultsExpanded
+					key={getDiceKey(d, i)}
+					diceRoll={d}
+					rollValues={rollValues}
+				/>
 			))}
 			{diceRoll.bonus && (
 				<Typography textAlign="center" lineHeight="28px" color="white">

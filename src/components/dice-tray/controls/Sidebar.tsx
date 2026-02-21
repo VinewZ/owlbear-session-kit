@@ -7,15 +7,15 @@ import { DicePicker } from "./DicePicker";
 import { DiceSetPicker } from "./DiceSetPicker";
 
 export function Sidebar() {
-  return (
-    <Stack p={1} gap={1} alignItems="center">
-      <DiceSetPicker />
-      <Divider flexItem sx={{ mx: 1 }} />
-      <DicePicker />
-      <Divider flexItem sx={{ mx: 1 }} />
-      <DiceHidden />
-      <DiceExtras />
-      <DiceHistory />
-    </Stack>
-  );
+	return (
+		<Stack p={1} gap={1} alignItems="center">
+			<DiceSetPicker />
+			<Divider flexItem sx={{ mx: 1 }} />
+			<DicePicker />
+			<Divider flexItem sx={{ mx: 1 }} />
+			<DiceHidden />
+			<DiceExtras />
+			<DiceHistory />
+		</Stack>
+	);
 }

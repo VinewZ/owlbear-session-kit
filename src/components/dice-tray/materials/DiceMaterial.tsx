@@ -9,24 +9,24 @@ import { SunsetMaterial } from "./sunset/SunsetMaterial";
 import { WalnutMaterial } from "./walnut/WalnutMaterial";
 
 export function DiceMaterial({ diceStyle }: { diceStyle: DiceStyle }) {
-  switch (diceStyle) {
-    case "GALAXY":
-      return <GalaxyMaterial />;
-    case "GEMSTONE":
-      return <GemstoneMaterial />;
-    case "GLASS":
-      return <GlassMaterial />;
-    case "IRON":
-      return <IronMaterial />;
-    case "NEBULA":
-      return <NebulaMaterial />;
-    case "SUNRISE":
-      return <SunriseMaterial />;
-    case "SUNSET":
-      return <SunsetMaterial />;
-    case "WALNUT":
-      return <WalnutMaterial />;
-    default:
-      throw Error(`Dice style ${diceStyle} error: not implemented`);
-  }
+	switch (diceStyle) {
+		case "GALAXY":
+			return <GalaxyMaterial />;
+		case "GEMSTONE":
+			return <GemstoneMaterial />;
+		case "GLASS":
+			return <GlassMaterial />;
+		case "IRON":
+			return <IronMaterial />;
+		case "NEBULA":
+			return <NebulaMaterial />;
+		case "SUNRISE":
+			return <SunriseMaterial />;
+		case "SUNSET":
+			return <SunsetMaterial />;
+		case "WALNUT":
+			return <WalnutMaterial />;
+		default:
+			throw Error(`Dice style ${diceStyle} error: not implemented`);
+	}
 }

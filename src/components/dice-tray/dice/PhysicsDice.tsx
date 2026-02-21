@@ -120,7 +120,7 @@ export function PhysicsDice({
 				}
 			}
 		},
-		[die.id, lockDice],
+		[die.id, lockDice, onRollFinished],
 	);
 
 	const handleFrame = useCallback(() => {
@@ -133,7 +133,7 @@ export function PhysicsDice({
 		if (fixedTransform) {
 			lockDice();
 		}
-	}, [fixedTransform]);
+	}, [fixedTransform, lockDice]);
 
 	// Stop the roll if over the max roll time
 	useEffect(() => {
@@ -180,7 +180,7 @@ export function PhysicsDice({
 				}
 			}
 		},
-		[],
+		[die, listener],
 	);
 
 	const userData = useMemo(

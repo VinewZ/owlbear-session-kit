@@ -2,14 +2,17 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
+import { OBRGate } from "@/components/obr-gate";
+
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-export const Route = createRootRoute({
-	component: () => (
-		<>
+function RootComponent() {
+
+	return (
+		<OBRGate>
 			<Outlet />
 			<TanStackDevtools
 				config={{
@@ -24,6 +27,10 @@ export const Route = createRootRoute({
 					},
 				]}
 			/>
-		</>
-	),
+		</OBRGate>
+	);
+}
+
+export const Route = createRootRoute({
+	component: RootComponent,
 });

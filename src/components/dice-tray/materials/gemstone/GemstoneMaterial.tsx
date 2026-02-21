@@ -1,27 +1,26 @@
-import type { JSX } from "react";
 import { useTexture } from "@react-three/drei";
-
-import albedo from "./albedo.jpg";
-import orm from "./orm.jpg";
-import normal from "./normal.jpg";
+import type { JSX } from "react";
 import { gltfTexture } from "../../helpers/gltfTexture";
+import albedo from "./albedo.jpg";
+import normal from "./normal.jpg";
+import orm from "./orm.jpg";
 
 export function GemstoneMaterial(
-  props: JSX.IntrinsicElements["meshStandardMaterial"]
+	props: JSX.IntrinsicElements["meshStandardMaterial"],
 ) {
-  const [albedoMap, ormMap, normalMap] = useTexture(
-    [albedo, orm, normal],
-    (textures) => gltfTexture(textures, ["SRGB", "LINEAR", "LINEAR"])
-  );
+	const [albedoMap, ormMap, normalMap] = useTexture(
+		[albedo, orm, normal],
+		(textures) => gltfTexture(textures, ["SRGB", "LINEAR", "LINEAR"]),
+	);
 
-  return (
-    <meshStandardMaterial
-      map={albedoMap}
-      aoMap={ormMap}
-      roughnessMap={ormMap}
-      metalnessMap={ormMap}
-      normalMap={normalMap}
-      {...props}
-    />
-  );
+	return (
+		<meshStandardMaterial
+			map={albedoMap}
+			aoMap={ormMap}
+			roughnessMap={ormMap}
+			metalnessMap={ormMap}
+			normalMap={normalMap}
+			{...props}
+		/>
+	);
 }

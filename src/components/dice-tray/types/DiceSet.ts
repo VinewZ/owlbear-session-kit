@@ -6,8 +6,8 @@ import type { Die } from "./Die";
  * more dice sets can be added that mix and match different styles and types.
  */
 export interface DiceSet {
-  id: string;
-  name: string;
-  dice: Die[];
-  previewImage: string;
+	id: string;
+	name: string;
+	dice: Die[];
+	previewImage: string;
 }

@@ -8,7 +8,7 @@ import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useDiceRollStore } from "../dice/store";
 import { DicePreview } from "../previews/DicePreview";
 import type { RecentRoll } from "./history";
@@ -36,6 +36,8 @@ export function DiceHistory() {
 
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
+	const historyButtonId = useId();
+	const historyMenuId = useId();
 	function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
 		setAnchorEl(event.currentTarget);
 	}
@@ -52,22 +54,22 @@ export function DiceHistory() {
 		<>
 			<Tooltip title="History" placement="top" disableInteractive>
 				<IconButton
-					id="history-button"
-					aria-controls={open ? "history-menu" : undefined}
+					id={historyButtonId}
+					aria-controls={open ? historyMenuId : undefined}
 					aria-haspopup="true"
 					aria-expanded={open ? "true" : undefined}
 					onClick={handleClick}
 				>
-					<HistoryIcon className="text-white"/>
+					<HistoryIcon className="text-white" />
 				</IconButton>
 			</Tooltip>
 			<Menu
-				id="history-menu"
+				id={historyMenuId}
 				anchorEl={anchorEl}
 				open={open}
 				onClose={handleClose}
 				MenuListProps={{
-					"aria-labelledby": "history-button",
+					"aria-labelledby": historyButtonId,
 				}}
 				anchorOrigin={{
 					vertical: "center",
@@ -81,7 +83,7 @@ export function DiceHistory() {
 				<Stack className="w-52" px={1} gap={0.5}>
 					{recentRolls.map((recentRoll, index) => (
 						<RecentRollChip
-							key={index}
+							key={`${recentRoll.bonus}-${recentRoll.advantage}-${index}`}
 							recentRoll={recentRoll}
 							onRoll={() => handleRoll(recentRoll)}
 							onDelete={() => removeRecentRoll(index)}

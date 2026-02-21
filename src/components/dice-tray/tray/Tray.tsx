@@ -1,11 +1,11 @@
 import type { JSX } from "react";
-import { TrayMesh } from "../meshes/TrayMesh";
 import { TrayMaterial } from "../materials/tray/TrayMaterial";
+import { TrayMesh } from "../meshes/TrayMesh";
 
 export function Tray(props: JSX.IntrinsicElements["group"]) {
-  return (
-    <TrayMesh {...props}>
-      <TrayMaterial />
-    </TrayMesh>
-  );
+	return (
+		<TrayMesh {...props}>
+			<TrayMaterial />
+		</TrayMesh>
+	);
 }

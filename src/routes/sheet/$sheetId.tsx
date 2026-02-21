@@ -1,11 +1,13 @@
 import { Box } from "@mui/material";
 import { createFileRoute } from "@tanstack/react-router";
+
 import { Footer } from "@/components/footer";
 import { Upload } from "@/components/upload";
 import { useCharacterSheet } from "@/hooks/use-character-sheet";
+
 import { CharacterSheet } from "./-components/character-sheet";
 
-export const Route = createFileRoute("/extensions/sheet/$sheetId")({
+export const Route = createFileRoute("/sheet/$sheetId")({
 	component: RouteComponent,
 });
 
@@ -24,5 +26,5 @@ function RouteComponent() {
 			)}
 			<Footer />
 		</Box>
-	)
+	);
 }

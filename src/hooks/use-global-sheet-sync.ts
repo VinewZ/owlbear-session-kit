@@ -1,6 +1,7 @@
 import OBR from "@owlbear-rodeo/sdk";
 import { useEffect, useRef } from "react";
 import { MAIN_BROADCAST_CHANNEL } from "@/lib/constants";
+import { useChunkedBroadcast } from "@/lib/obr/hooks/use-chunked-broadcast";
 import { getAllSheets, getSheet, saveSheet } from "@/lib/storage/indexeddb";
 import type { BroadcastMessage } from "@/types";
 
@@ -9,6 +10,7 @@ const lastUpdateTimestamps = new Map<string, number>();
 export function useGlobalSheetSync() {
 	const hasReceivedFullSync = useRef(false);
 	const playerIdRef = useRef<string | null>(null);
+	const { sendMessage, listenMessage } = useChunkedBroadcast();
 
 	useEffect(() => {
 		if (!OBR.isAvailable) return;
@@ -41,11 +43,10 @@ export function useGlobalSheetSync() {
 				timestamp: Date.now(),
 			};
 
-			await OBR.broadcast.sendMessage(
-				MAIN_BROADCAST_CHANNEL,
-				JSON.stringify(syncMessage),
-				{ destination: "ALL" },
-			);
+			sendMessage({
+				channel: MAIN_BROADCAST_CHANNEL,
+				message: JSON.stringify(syncMessage),
+			});
 		}
 
 		async function handleFullSyncRequest(
@@ -67,11 +68,10 @@ export function useGlobalSheetSync() {
 				})),
 			};
 
-			await OBR.broadcast.sendMessage(
-				MAIN_BROADCAST_CHANNEL,
-				JSON.stringify(syncMessage),
-				{ destination: "ALL" },
-			);
+			sendMessage({
+				channel: MAIN_BROADCAST_CHANNEL,
+				message: JSON.stringify(syncMessage),
+			});
 		}
 
 		async function handleFullSyncResponse(
@@ -95,11 +95,10 @@ export function useGlobalSheetSync() {
 				senderId: playerIdRef.current ?? undefined,
 			};
 
-			await OBR.broadcast.sendMessage(
-				MAIN_BROADCAST_CHANNEL,
-				JSON.stringify(message),
-				{ destination: "ALL" },
-			);
+			sendMessage({
+				channel: MAIN_BROADCAST_CHANNEL,
+				message: JSON.stringify(message),
+			});
 
 			setTimeout(() => {
 				hasReceivedFullSync.current = true;
@@ -110,11 +109,11 @@ export function useGlobalSheetSync() {
 			const playerId = await OBR.player.getId();
 			playerIdRef.current = playerId;
 
-			unsubscribe = OBR.broadcast.onMessage(
-				MAIN_BROADCAST_CHANNEL,
-				async (event) => {
+			unsubscribe = listenMessage({
+				channel: MAIN_BROADCAST_CHANNEL,
+				onMessage: async (data) => {
 					try {
-						const message: BroadcastMessage = JSON.parse(event.data as string);
+						const message: BroadcastMessage = JSON.parse(data);
 
 						if (message.senderId === playerIdRef.current) return;
 
@@ -131,7 +130,7 @@ export function useGlobalSheetSync() {
 						console.error("Failed to handle global sync broadcast:", err);
 					}
 				},
-			);
+			});
 
 			await broadcastFullSyncRequest();
 		});
@@ -141,5 +140,5 @@ export function useGlobalSheetSync() {
 				unsubscribe();
 			}
 		};
-	}, []);
+	}, [sendMessage, listenMessage]);
 }

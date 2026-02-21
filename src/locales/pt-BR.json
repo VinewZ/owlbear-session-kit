@@ -1,13 +1,12 @@
 {
 	"abilities": {
-		"scores": "Pontos de Habilidade",
+		"abilitiesSkills": "Habilidades & Perícias",
 		"strength": "Força",
 		"dexterity": "Destreza",
 		"constitution": "Constituição",
 		"intelligence": "Inteligência",
 		"wisdom": "Sabedoria",
 		"charisma": "Carisma",
-		"skills": "Perícias",
 		"save": "Save",
 		"str": "FOR",
 		"dex": "DES",
@@ -82,12 +81,25 @@
 	"settings": {
 		"title": "Configurações",
 		"language": "Idioma",
-		"theme": "Tema",
-		"light": "Claro",
-		"dark": "Escuro"
+		"accentColor": "Cor de Destaque"
 	},
 	"common": {
 		"minimize": "Minimizar",
 		"maximize": "Maximizar"
+	},
+	"upload": {
+		"dragDrop": "Arraste e solte seu PDF aqui",
+		"orClick": "ou clique para procurar",
+		"browseFiles": "Procurar Arquivos",
+		"parsing": "Processando...",
+		"success": "Sucesso!",
+		"uploadingFor": "Enviando ficha de personagem para:",
+		"unknownToken": "Token Desconhecido",
+		"supportedFormats": "Suportado: arquivos PDF com campos de formulário (D&D 5e)",
+		"errors": {
+			"invalidType": "Por favor, selecione um arquivo PDF",
+			"empty": "Nenhum dado de personagem encontrado no PDF",
+			"parseFailed": "Falha ao processar o PDF. Por favor, tente novamente."
+		}
 	}
 }

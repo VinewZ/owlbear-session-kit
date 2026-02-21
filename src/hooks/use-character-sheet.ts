@@ -2,6 +2,7 @@ import OBR from "@owlbear-rodeo/sdk";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 import { MAIN_BROADCAST_CHANNEL } from "@/lib/constants";
+import { useChunkedBroadcast } from "@/lib/obr/hooks/use-chunked-broadcast";
 import { getSheet, saveSheet } from "@/lib/storage/indexeddb";
 import type { BroadcastMessage, CharacterT } from "@/types";
 
@@ -10,6 +11,7 @@ export function useCharacterSheet(sheetId: string) {
 	const [loading, setLoading] = useState(true);
 	const isApplyingRemote = useRef(false);
 	const lastUpdateTimestamp = useRef(0);
+	const { sendMessage, listenMessage } = useChunkedBroadcast();
 
 	useEffect(() => {
 		let mounted = true;
@@ -36,19 +38,6 @@ export function useCharacterSheet(sheetId: string) {
 		};
 	}, [sheetId]);
 
-	const save = useCallback(
-		async (data: CharacterT) => {
-			try {
-				await saveSheet(sheetId, data);
-				setSheet(data);
-			} catch (err) {
-				console.error("Failed to save sheet:", err);
-				throw err;
-			}
-		},
-		[sheetId],
-	);
-
 	const broadcastUpdate = useDebounceCallback(async (data: CharacterT) => {
 		if (isApplyingRemote.current) return;
 
@@ -64,12 +53,25 @@ export function useCharacterSheet(sheetId: string) {
 			timestamp,
 		};
 
-		await OBR.broadcast.sendMessage(
-			MAIN_BROADCAST_CHANNEL,
-			JSON.stringify(message),
-			{ destination: "ALL" },
-		);
+		sendMessage({
+			channel: MAIN_BROADCAST_CHANNEL,
+			message: JSON.stringify(message),
+		});
 	}, 300);
+
+	const save = useCallback(
+		async (data: CharacterT) => {
+			try {
+				await saveSheet(sheetId, data);
+				setSheet(data);
+				broadcastUpdate(data);
+			} catch (err) {
+				console.error("Failed to save sheet:", err);
+				throw err;
+			}
+		},
+		[sheetId, broadcastUpdate],
+	);
 
 	const update = useCallback(
 		async (data: CharacterT) => {
@@ -89,11 +91,11 @@ export function useCharacterSheet(sheetId: string) {
 	useEffect(() => {
 		if (!OBR.isAvailable) return;
 
-		const unsubscribe = OBR.broadcast.onMessage(
-			MAIN_BROADCAST_CHANNEL,
-			async (event) => {
+		const unsubscribe = listenMessage({
+			channel: MAIN_BROADCAST_CHANNEL,
+			onMessage: async (data) => {
 				try {
-					const message: BroadcastMessage = JSON.parse(event.data as string);
+					const message: BroadcastMessage = JSON.parse(data);
 
 					if (message.type !== "update") return;
 					if (message.sheetId !== sheetId) return;
@@ -111,12 +113,12 @@ export function useCharacterSheet(sheetId: string) {
 					console.error("Failed to handle broadcast:", err);
 				}
 			},
-		);
+		});
 
 		return () => {
 			unsubscribe();
 		};
-	}, [sheetId]);
+	}, [sheetId, listenMessage]);
 
 	return {
 		sheet,

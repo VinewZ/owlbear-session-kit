@@ -1,5 +1,7 @@
 const DNS_ID = "com.vinewz.session-kit";
 
+export const ACCENT_COLOR_KEY = `${DNS_ID}/accent-color`;
+
 export const SHEET_POPOVER_ID = `${DNS_ID}/right-sheet-popover`;
 export const ATTACH_SHEET_CONTEXT_MENU_ID = `${DNS_ID}/attach-sheet-context-menu`;
 export const SHEET_UPLOADED_ID = `${DNS_ID}/sheet-uploaded-id`;

@@ -1,9 +1,11 @@
 import { useCallback } from "react";
 import { MAIN_BROADCAST_CHANNEL } from "@/lib/constants";
+import { useAccentColor } from "../use-accent-color";
 
 const DICE_REGEX = /\b[1-9]\d*[dD](?:4|6|8|10|12|20|100)(?:[+-]\d+)?\b/g;
 
 export function useHighlightDice() {
+  const {accentColor} = useAccentColor()
 	const highlight = useCallback((text: string): React.ReactNode[] => {
 		if (!text) return [text];
 
@@ -20,7 +22,8 @@ export function useHighlightDice() {
 				<button
 					key={`dice-${index}`}
 					type="button"
-					className="bg-[#BB99FF] text-white rounded px-1 py-0.5 cursor-pointer"
+					className="text-white rounded px-1 py-0.5 cursor-pointer"
+          style={{background: accentColor || ""}}
 					onClick={(e) => {
 						e.stopPropagation();
 						const channel = new BroadcastChannel(MAIN_BROADCAST_CHANNEL);
@@ -38,7 +41,7 @@ export function useHighlightDice() {
 		result.push(text.slice(lastIndex));
 
 		return result;
-	}, []);
+	}, [accentColor]);
 
 	return highlight;
 }

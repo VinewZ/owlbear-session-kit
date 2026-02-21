@@ -1,13 +1,12 @@
 {
 	"abilities": {
-		"scores": "Ability Scores",
+		"abilitiesSkills": "Abilities & Skills",
 		"strength": "Strength",
 		"dexterity": "Dexterity",
 		"constitution": "Constitution",
 		"intelligence": "Intelligence",
 		"wisdom": "Wisdom",
 		"charisma": "Charisma",
-		"skills": "Skills",
 		"save": "Save",
 		"str": "STR",
 		"dex": "DEX",
@@ -82,12 +81,25 @@
 	"settings": {
 		"title": "Settings",
 		"language": "Language",
-		"theme": "Theme",
-		"light": "Light",
-		"dark": "Dark"
+		"accentColor": "Accent Color"
 	},
 	"common": {
 		"minimize": "Minimize",
 		"maximize": "Maximize"
+	},
+	"upload": {
+		"dragDrop": "Drag & drop your PDF here",
+		"orClick": "or click to browse",
+		"browseFiles": "Browse Files",
+		"parsing": "Parsing...",
+		"success": "Success!",
+		"uploadingFor": "Uploading character sheet for:",
+		"unknownToken": "Unknown Token",
+		"supportedFormats": "Supported: PDF files with form fields (D&D 5e)",
+		"errors": {
+			"invalidType": "Please select a PDF file",
+			"empty": "No character data found in PDF",
+			"parseFailed": "Failed to parse PDF. Please try again."
+		}
 	}
 }

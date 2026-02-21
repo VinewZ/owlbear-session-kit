@@ -1,121 +1,196 @@
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, Divider, Paper, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { JsonInput } from "@/components/json-input";
 import type { UpdateFieldFn } from "@/hooks/use-sheet-updater";
 import { SKILL_TO_ABILITY } from "@/lib/constants";
 import type { CharacterT } from "@/types";
+import { lighten } from "@mui/material/styles";
 
 type AbilitiesPanelProps = {
-	sheet: CharacterT;
-	updateField: UpdateFieldFn;
+  sheet: CharacterT;
+  updateField: UpdateFieldFn;
 };
 
 const ABILITIES = ["STR", "DEX", "CON", "INT", "WIS", "CHA"];
 
 const SKILLS_BY_ABILITY = Object.entries(SKILL_TO_ABILITY).reduce<
-	Record<string, string[]>
+  Record<string, string[]>
 >((acc, [skill, ability]) => {
-	if (!acc[ability]) acc[ability] = [];
-	acc[ability].push(skill);
-	return acc;
+  if (!acc[ability]) acc[ability] = [];
+  acc[ability].push(skill);
+  return acc;
 }, {});
 
 export function AbilitiesPanel({ sheet, updateField }: AbilitiesPanelProps) {
-	const { t } = useTranslation();
-	return (
-		<Box className="bg-secondary overflow-y-auto flex flex-col gap-4 p-3">
-			<Box>
-				<Typography
-					variant="overline"
-					className="text-foreground/60 block mb-2"
-				>
-					{t("abilities.scores")}
-				</Typography>
-				<Box className="flex flex-col gap-2">
-					{ABILITIES.map((ability) => {
-						const data = sheet.abilities[ability] ?? {};
-						return (
-							<Paper
-								key={ability}
-								variant="outlined"
-								className="px-3 py-2 flex items-center justify-between gap-2 dark:bg-background/40"
-							>
-								<Typography
-									variant="caption"
-									className="font-bold uppercase text-foreground/60 w-8 shrink-0"
-								>
-									{t(`abilities.${ability.toLowerCase()}`)}
-								</Typography>
-								<Box className="flex flex-col items-center flex-1">
-									<JsonInput
-										className="text-2xl font-bold text-center"
-										value={data.mod}
-										onChange={(v) =>
-											updateField(["abilities", ability, "mod"], v)
-										}
-									/>
-									<JsonInput
-										className="text-xs text-center text-foreground/60"
-										value={data.score}
-										onChange={(v) =>
-											updateField(["abilities", ability, "score"], v)
-										}
-									/>
-								</Box>
-								<Box className="text-right shrink-0 w-10">
-									<Typography
-										variant="caption"
-										className="text-foreground/40 block"
-									>
-										{t("abilities.save")}
-									</Typography>
-									<JsonInput
-										className="text-xs text-center"
-										value={data.save !== undefined ? data.save : "—"}
-										onChange={(v) =>
-											updateField(["abilities", ability, "save"], v)
-										}
-									/>
-								</Box>
-							</Paper>
-						);
-					})}
-				</Box>
-			</Box>
+  const { t } = useTranslation();
 
-			<Box>
-				<Typography
-					variant="overline"
-					className="text-foreground/60 block mb-2"
-				>
-					{t("abilities.skills")}
-				</Typography>
-				<Box className="flex flex-col gap-0.5">
-					{ABILITIES.map((ability) =>
-						(SKILLS_BY_ABILITY[ability] ?? []).map((skill) => {
-							const skillVal = sheet.skills[skill];
-							if (skillVal === undefined) return null;
-							return (
-								<Box
-									key={skill}
-									className="flex items-center justify-between px-2 py-0.5 rounded hover:bg-background/50 transition-colors"
-								>
-									<Typography variant="caption" className="capitalize">
-										{t(`skills.${skill.toLowerCase().replace(/ /g, "_")}`, {
-											defaultValue: skill.toLowerCase(),
-										})}
-									</Typography>
-									<JsonInput
-										className="text-xs text-right w-10"
-										value={skillVal}
-										onChange={(v) => updateField(["skills", skill], v)}
-									/>
-								</Box>
-							);
-						}),
-					)}
-				</Box>
-			</Box>
-		</Box>
-	);
+  return (
+    <Box
+      className="flex flex-col gap-1.5 p-1.5 overflow-y-auto"
+      sx={{
+        bgcolor: (theme) => lighten(theme.palette.background.paper, 0.06),
+      }}
+    >
+      <Typography variant="overline" sx={{ color: "text.secondary", mb: 0.5 }}>
+        {t("abilities.abilitiesSkills")}
+      </Typography>
+
+      {ABILITIES.map((ability) => {
+        const data = sheet.abilities[ability] ?? {};
+        const skills = SKILLS_BY_ABILITY[ability] ?? [];
+        const hasSkills = skills.some(
+          (skill) => sheet.skills[skill] !== undefined,
+        );
+
+        return (
+          <Paper key={ability} variant="outlined" sx={{ overflow: "hidden" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                px: 2,
+                py: 1,
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: "bold",
+                  width: 32,
+                  shrink: 0,
+                  textTransform: "uppercase",
+                }}
+              >
+                {ability}
+              </Typography>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                  flex: 1,
+                  justifyContent: "center",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    minWidth: 40,
+                  }}
+                >
+                  <JsonInput
+                    className="text-xl font-bold"
+                    value={data.mod}
+                    onChange={(v) =>
+                      updateField(["abilities", ability, "mod"], v)
+                    }
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.disabled", fontSize: "0.625rem" }}
+                  >
+                    MOD
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    minWidth: 40,
+                  }}
+                >
+                  <JsonInput
+                    className="text-base font-medium"
+                    value={data.score}
+                    onChange={(v) =>
+                      updateField(["abilities", ability, "score"], v)
+                    }
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.disabled", fontSize: "0.625rem" }}
+                  >
+                    SCORE
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    minWidth: 40,
+                  }}
+                >
+                  <JsonInput
+                    className="text-base font-medium"
+                    value={data.save !== undefined ? data.save : "—"}
+                    onChange={(v) =>
+                      updateField(["abilities", ability, "save"], v)
+                    }
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.disabled", fontSize: "0.625rem" }}
+                  >
+                    SAVE
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+
+            {hasSkills && (
+              <>
+                <Divider />
+                <Box sx={{ px: 2, py: 0.5 }}>
+                  {skills.map((skill) => {
+                    const skillVal = sheet.skills[skill];
+                    if (skillVal === undefined) return null;
+
+                    return (
+                      <Box
+                        key={skill}
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          py: 0.25,
+                          "&:hover": { bgcolor: "action.hover" },
+                          borderRadius: 0.5,
+                          px: 0.5,
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{ textTransform: "capitalize" }}
+                        >
+                          {t(
+                            `skills.${skill.toLowerCase().replace(/ /g, "_")}`,
+                            {
+                              defaultValue: skill.toLowerCase(),
+                            },
+                          )}
+                        </Typography>
+                        <JsonInput
+                          className="text-xs text-right w-8"
+                          value={skillVal}
+                          onChange={(v) => updateField(["skills", skill], v)}
+                        />
+                      </Box>
+                    );
+                  })}
+                </Box>
+              </>
+            )}
+          </Paper>
+        );
+      })}
+    </Box>
+  );
 }

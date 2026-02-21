@@ -1,4 +1,4 @@
-import { DarkMode, LightMode, Settings } from "@mui/icons-material";
+import { Settings } from "@mui/icons-material";
 import {
 	Box,
 	Divider,
@@ -6,17 +6,16 @@ import {
 	MenuItem,
 	Popover,
 	Select,
-	ToggleButton,
-	ToggleButtonGroup,
 	Typography,
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDarkModeContext } from "@/components/theme-provider";
+import { ColorPicker } from "@/components/color-picker";
+import { useAccentColor } from "@/hooks/use-accent-color";
 
 export function SettingsPopover() {
 	const { t, i18n } = useTranslation();
-	const { isDark, toggle } = useDarkModeContext();
+	const { accentColor, saveAccentColor, clearAccentColor } = useAccentColor();
 	const [anchor, setAnchor] = useState<HTMLButtonElement | null>(null);
 
 	function handleOpen(e: React.MouseEvent<HTMLButtonElement>) {
@@ -45,16 +44,26 @@ export function SettingsPopover() {
 				onClose={handleClose}
 				anchorOrigin={{ vertical: "top", horizontal: "center" }}
 				transformOrigin={{ vertical: "bottom", horizontal: "center" }}
-				slotProps={{ paper: { className: "p-4 flex flex-col gap-4 min-w-48" } }}
+				slotProps={{
+					paper: {
+						sx: {
+							p: 2,
+							display: "flex",
+							flexDirection: "column",
+							gap: 2,
+							minWidth: 200,
+						},
+					},
+				}}
 			>
-				<Typography variant="subtitle2" className="font-bold">
+				<Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
 					{t("settings.title")}
 				</Typography>
 
 				<Divider />
 
-				<Box className="flex flex-col gap-1">
-					<Typography variant="caption" className="text-foreground/60">
+				<Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+					<Typography variant="caption" sx={{ color: "text.secondary" }}>
 						{t("settings.language")}
 					</Typography>
 					<Select
@@ -68,28 +77,17 @@ export function SettingsPopover() {
 					</Select>
 				</Box>
 
-				<Box className="flex flex-col gap-1">
-					<Typography variant="caption" className="text-foreground/60">
-						{t("settings.theme")}
+				<Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+					<Typography variant="caption" sx={{ color: "text.secondary" }}>
+						{t("settings.accentColor")}
 					</Typography>
-					<ToggleButtonGroup
-						value={isDark ? "dark" : "light"}
-						exclusive
-						onChange={(_, val) => {
-							if (val !== null && (val === "dark") !== isDark) toggle();
-						}}
-						size="small"
-						fullWidth
-					>
-						<ToggleButton value="light" aria-label={t("settings.light")}>
-							<LightMode fontSize="small" className="mr-1" />
-							{t("settings.light")}
-						</ToggleButton>
-						<ToggleButton value="dark" aria-label={t("settings.dark")}>
-							<DarkMode fontSize="small" className="mr-1" />
-							{t("settings.dark")}
-						</ToggleButton>
-					</ToggleButtonGroup>
+					{accentColor && (
+						<ColorPicker
+							value={accentColor}
+							onChange={saveAccentColor}
+							onClear={clearAccentColor}
+						/>
+					)}
 				</Box>
 			</Popover>
 		</>

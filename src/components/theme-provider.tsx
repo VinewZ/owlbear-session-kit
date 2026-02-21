@@ -3,42 +3,64 @@ import {
 	createTheme,
 	ThemeProvider as MuiThemeProvider,
 } from "@mui/material/styles";
-import { createContext, useContext, useMemo } from "react";
-import { useDarkMode } from "@/hooks/use-dark-mode";
+import OBR, { type Theme } from "@owlbear-rodeo/sdk";
+import { useEffect, useState } from "react";
 
-type DarkModeContextT = {
-	isDark: boolean;
-	toggle: () => void;
-};
-
-const DarkModeContext = createContext<DarkModeContextT>({
-	isDark: false,
-	toggle: () => {},
-});
-
-export function useDarkModeContext() {
-	return useContext(DarkModeContext);
+function getTheme(obrTheme?: Theme) {
+	return createTheme({
+		palette: obrTheme
+			? {
+					mode: obrTheme.mode === "LIGHT" ? "light" : "dark",
+					text: obrTheme.text,
+					primary: obrTheme.primary,
+					secondary: obrTheme.secondary,
+					background: obrTheme.background,
+				}
+			: undefined,
+		shape: {
+			borderRadius: 12,
+		},
+		components: {
+			MuiButtonBase: {
+				defaultProps: {
+					disableRipple: true,
+				},
+			},
+		},
+	});
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-	const { isDark, toggle } = useDarkMode();
+	const [theme, setTheme] = useState(() => getTheme());
 
-	const muiTheme = useMemo(
-		() =>
-			createTheme({
-				palette: {
-					mode: isDark ? "dark" : "light",
-				},
-			}),
-		[isDark],
-	);
+	useEffect(() => {
+		const updateTheme = (obrTheme: Theme) => {
+			setTheme(getTheme(obrTheme));
+		};
+
+		let unsubscribe: (() => void) | null = null;
+
+		async function init() {
+			const obrTheme = await OBR.theme.getTheme();
+			updateTheme(obrTheme);
+			unsubscribe = OBR.theme.onChange(updateTheme);
+		}
+
+		OBR.onReady(() => {
+			init();
+		});
+
+		return () => {
+			if (unsubscribe) {
+				unsubscribe();
+			}
+		};
+	}, []);
 
 	return (
-		<DarkModeContext.Provider value={{ isDark, toggle }}>
-			<MuiThemeProvider theme={muiTheme}>
-				<CssBaseline enableColorScheme />
-				{children}
-			</MuiThemeProvider>
-		</DarkModeContext.Provider>
+		<MuiThemeProvider theme={theme}>
+			<CssBaseline enableColorScheme />
+			{children}
+		</MuiThemeProvider>
 	);
 }

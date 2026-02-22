@@ -8,8 +8,8 @@ import { routeTree } from "./routeTree.gen";
 
 import "./styles.css";
 import { I18nextProvider } from "react-i18next";
-import { ThemeProvider } from "./components/theme-provider";
 import i18n from "./lib/i18n";
+import { ThemeProvider } from "./providers/theme.tsx";
 import reportWebVitals from "./reportWebVitals.ts";
 
 const router = createRouter({

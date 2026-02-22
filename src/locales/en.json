@@ -70,6 +70,7 @@
 		"max": "Max",
 		"temp": "Temp",
 		"proficiency": "Proficiency",
+		"passivePerception": "Passive Perception",
 		"ability": "Ability",
 		"attackBonus": "Attack Bonus",
 		"saveDC": "Save DC",

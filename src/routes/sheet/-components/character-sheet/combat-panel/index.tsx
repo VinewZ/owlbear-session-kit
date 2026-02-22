@@ -53,15 +53,10 @@ export function CombatPanel({ sheet, updateField }: CombatPanelProps) {
 				))}
 			</Box>
 
-			<Box className="grid grid-cols-[1fr_auto] gap-3">
-				<HitPointsCard
-					sheet={sheet}
-					hpPercent={hpPercent}
-					updateField={updateField}
-				/>
+			<Box className="grid grid-cols-2 gap-3">
 				<Paper
 					variant="outlined"
-					className="p-4 flex flex-col items-center justify-center min-w-24"
+					className="p-4 flex flex-col items-center justify-center"
 				>
 					<Typography
 						variant="overline"
@@ -75,7 +70,29 @@ export function CombatPanel({ sheet, updateField }: CombatPanelProps) {
 						onChange={(v) => updateField(["combat", "proficiencyBonus"], v)}
 					/>
 				</Paper>
+				<Paper
+					variant="outlined"
+					className="p-4 flex flex-col items-center justify-center"
+				>
+					<Typography
+						variant="overline"
+						className="text-foreground/60 text-center leading-tight"
+					>
+						{t("combat.passivePerception")}
+					</Typography>
+					<JsonInput
+						className="text-4xl font-bold text-center"
+						value={sheet.identity.passivePerception}
+						onChange={(v) => updateField(["identity", "passivePerception"], v)}
+					/>
+				</Paper>
 			</Box>
+
+			<HitPointsCard
+				sheet={sheet}
+				hpPercent={hpPercent}
+				updateField={updateField}
+			/>
 
 			<Box>
 				<Typography variant="overline" className="block mb-1">

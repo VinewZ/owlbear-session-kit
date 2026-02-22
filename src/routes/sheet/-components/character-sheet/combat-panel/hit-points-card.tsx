@@ -1,4 +1,11 @@
-import { Box, LinearProgress, Paper, Typography } from "@mui/material";
+import { Add, Remove } from "@mui/icons-material";
+import {
+	Box,
+	IconButton,
+	LinearProgress,
+	Paper,
+	Typography,
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { JsonInput } from "@/components/json-input";
 import type { UpdateFieldFn } from "@/hooks/use-sheet-updater";
@@ -16,6 +23,27 @@ export function HitPointsCard({
 	updateField,
 }: HitPointsCardProps) {
 	const { t } = useTranslation();
+
+	const currentHP = sheet.combat.currentHP ?? 0;
+	const maxHP = sheet.combat.maxHP ?? 0;
+	const tempHP = sheet.combat.tempHP ?? 0;
+
+	const handleIncrement = () => {
+		if (currentHP >= maxHP) {
+			updateField(["combat", "tempHP"], tempHP + 1);
+		} else {
+			updateField(["combat", "currentHP"], currentHP + 1);
+		}
+	};
+
+	const handleDecrement = () => {
+		if (tempHP > 0) {
+			updateField(["combat", "tempHP"], tempHP - 1);
+		} else {
+			updateField(["combat", "currentHP"], Math.max(0, currentHP - 1));
+		}
+	};
+
 	return (
 		<Paper variant="outlined" className="p-4">
 			<Typography variant="overline" className="text-foreground/60 block mb-2">
@@ -54,6 +82,38 @@ export function HitPointsCard({
 					<Typography variant="caption" className="text-foreground/50">
 						{t("combat.temp")}
 					</Typography>
+				</Box>
+				<Box className="flex items-center gap-2 ml-auto">
+					<IconButton
+						onClick={handleIncrement}
+						size="medium"
+						sx={{
+							bgcolor: "success.main",
+							color: "white",
+							"&:hover": {
+								bgcolor: "success.dark",
+								transform: "scale(1.1)",
+							},
+							transition: "all 0.15s ease",
+						}}
+					>
+						<Add />
+					</IconButton>
+					<IconButton
+						onClick={handleDecrement}
+						size="medium"
+						sx={{
+							bgcolor: "error.main",
+							color: "white",
+							"&:hover": {
+								bgcolor: "error.dark",
+								transform: "scale(1.1)",
+							},
+							transition: "all 0.15s ease",
+						}}
+					>
+						<Remove />
+					</IconButton>
 				</Box>
 			</Box>
 			<LinearProgress

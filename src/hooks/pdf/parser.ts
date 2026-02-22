@@ -76,6 +76,13 @@ function createEmptyCharacter(): CharacterT {
 		proficiencies: "",
 		tool: "",
 		equipment: "",
+		currency: {
+			cp: 0,
+			sp: 0,
+			ep: 0,
+			gp: 0,
+			pp: 0,
+		},
 	};
 }
 
@@ -86,6 +93,7 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
 
 	for (const [field, widgets] of Object.entries(form)) {
 		if (field.startsWith("Check Box")) continue;
+
 		for (const widget of widgets as { value?: unknown }[]) {
 			if (typeof widget.value !== "string") continue;
 
@@ -164,8 +172,11 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
 				continue;
 			}
 
-			if (field.startsWith("CLASS FEATURES")) {
-				char.classFeatures = multiLineSplit(value);
+			if (field === "CLASS FEATURES 1" || field === "CLASS FEATURES 2") {
+				const features = multiLineSplit(value);
+				char.classFeatures = char.classFeatures
+					? `${char.classFeatures}\r\n${features}`
+					: features;
 				continue;
 			}
 
@@ -256,6 +267,22 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
 					break;
 				case "TOOL PROF":
 					char.tool = value;
+					break;
+
+				case "CP":
+					char.currency.cp = Number(value);
+					break;
+				case "SP":
+					char.currency.sp = Number(value);
+					break;
+				case "EP":
+					char.currency.ep = Number(value);
+					break;
+				case "GP":
+					char.currency.gp = Number(value);
+					break;
+				case "PP":
+					char.currency.pp = Number(value);
 					break;
 			}
 		}

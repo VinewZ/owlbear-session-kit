@@ -48,7 +48,13 @@
 		"languages": "Idiomas",
 		"proficiencies": "Proficiências",
 		"background": "Antecedente",
-		"tools": "Ferramentas"
+		"tools": "Ferramentas",
+		"coins": "Moedas",
+		"cp": "PC",
+		"sp": "PP",
+		"ep": "PE",
+		"gp": "PO",
+		"pp": "PL"
 	},
 	"combat": {
 		"stats": "Estatísticas de Combate",

@@ -48,7 +48,13 @@
 		"languages": "Languages",
 		"proficiencies": "Proficiencies",
 		"background": "Background",
-		"tools": "Tools"
+		"tools": "Tools",
+		"coins": "Coins",
+		"cp": "CP",
+		"sp": "SP",
+		"ep": "EP",
+		"gp": "GP",
+		"pp": "PP"
 	},
 	"combat": {
 		"stats": "Combat Stats",

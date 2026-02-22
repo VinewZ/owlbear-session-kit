@@ -56,6 +56,14 @@ export type Abilities = Record<
 	}
 >;
 
+export type Currency = {
+	cp: number;
+	sp: number;
+	ep: number;
+	gp: number;
+	pp: number;
+};
+
 export type CharacterT = {
 	identity: Identity;
 	equipment: string;
@@ -68,4 +76,5 @@ export type CharacterT = {
 	classFeatures: string;
 	proficiencies: string;
 	tool: string;
+	currency: Currency;
 };

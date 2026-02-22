@@ -137,7 +137,7 @@ export function Header({ sheet, sheetId, updateField }: HeaderProps) {
 							</Typography>
 							<JsonInput
 								className="text-center"
-								value={sheet.currency.cp}
+								value={sheet.currency?.cp ?? 0}
 								onChange={(v) => updateField(["currency", "cp"], v)}
 							/>
 						</Box>
@@ -147,7 +147,7 @@ export function Header({ sheet, sheetId, updateField }: HeaderProps) {
 							</Typography>
 							<JsonInput
 								className="text-center"
-								value={sheet.currency.sp}
+								value={sheet.currency?.sp ?? 0}
 								onChange={(v) => updateField(["currency", "sp"], v)}
 							/>
 						</Box>
@@ -157,7 +157,7 @@ export function Header({ sheet, sheetId, updateField }: HeaderProps) {
 							</Typography>
 							<JsonInput
 								className="text-center"
-								value={sheet.currency.ep}
+								value={sheet.currency?.ep ?? 0}
 								onChange={(v) => updateField(["currency", "ep"], v)}
 							/>
 						</Box>
@@ -167,7 +167,7 @@ export function Header({ sheet, sheetId, updateField }: HeaderProps) {
 							</Typography>
 							<JsonInput
 								className="text-center"
-								value={sheet.currency.gp}
+								value={sheet.currency?.gp ?? 0}
 								onChange={(v) => updateField(["currency", "gp"], v)}
 							/>
 						</Box>
@@ -177,7 +177,7 @@ export function Header({ sheet, sheetId, updateField }: HeaderProps) {
 							</Typography>
 							<JsonInput
 								className="text-center"
-								value={sheet.currency.pp}
+								value={sheet.currency?.pp ?? 0}
 								onChange={(v) => updateField(["currency", "pp"], v)}
 							/>
 						</Box>

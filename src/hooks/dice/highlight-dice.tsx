@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { MAIN_BROADCAST_CHANNEL } from "@/lib/constants";
+import { DICE_BROADCAST_CHANNEL } from "@/lib/constants";
 import { useAccentColor } from "../use-accent-color";
 
 const DICE_REGEX = /\b[1-9]\d*[dD](?:4|6|8|10|12|20|100)(?:[+-]\d+)?\b/g;
@@ -27,7 +27,7 @@ export function useHighlightDice() {
 						style={{ background: accentColor }}
 						onClick={(e) => {
 							e.stopPropagation();
-							const channel = new BroadcastChannel(MAIN_BROADCAST_CHANNEL);
+							const channel = new BroadcastChannel(DICE_BROADCAST_CHANNEL);
 							channel.postMessage({ type: "ROLL_DICE", notation });
 							channel.close();
 						}}

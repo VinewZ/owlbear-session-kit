@@ -1,18 +1,48 @@
-import OBR from "@owlbear-rodeo/sdk";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
-import { MAIN_BROADCAST_CHANNEL } from "@/lib/constants";
-import { useChunkedBroadcast } from "@/lib/obr/hooks/use-chunked-broadcast";
-import { deleteSheet, getSheet, saveSheet } from "@/lib/storage/indexeddb";
-import type { BroadcastMessage, CharacterT } from "@/types";
+import {
+	deleteSheet,
+	getSheet,
+	saveSheet,
+	subscribeToSheet,
+} from "@/lib/storage/supabase";
+import type { CharacterT } from "@/types";
 
 export function useCharacterSheet(sheetId: string) {
 	const [sheet, setSheet] = useState<CharacterT | null>(null);
 	const [loading, setLoading] = useState(true);
-	const isApplyingRemote = useRef(false);
-	const lastUpdateTimestamp = useRef(0);
-	const { sendMessage, listenMessage } = useChunkedBroadcast();
 
+	// Track timestamps to avoid duplicate/stale updates
+	const lastSentRef = useRef<number>(0);
+	const currentLastModifiedRef = useRef<number>(0);
+
+	// Debounced save (300ms) - batches rapid changes
+	const debouncedSave = useDebounceCallback(
+		async (data: CharacterT) => {
+			try {
+				const timestamp = Date.now();
+				lastSentRef.current = timestamp;
+				await saveSheet(sheetId, data, timestamp);
+				// Update our last modified marker after successful save
+				currentLastModifiedRef.current = timestamp;
+			} catch (err) {
+				console.error("Failed to save sheet:", err);
+				// Revert to server state on error
+				try {
+					const record = await getSheet(sheetId);
+					if (record) {
+						setSheet(record.data);
+						currentLastModifiedRef.current = record.last_modified;
+					}
+				} catch (e) {
+					console.error("Failed to revert:", e);
+				}
+			}
+		},
+		300, // 300ms debounce - balances responsiveness vs network load
+	);
+
+	// Load initial data
 	useEffect(() => {
 		let mounted = true;
 
@@ -21,6 +51,9 @@ export function useCharacterSheet(sheetId: string) {
 				const record = await getSheet(sheetId);
 				if (mounted) {
 					setSheet(record?.data || null);
+					if (record?.last_modified) {
+						currentLastModifiedRef.current = record.last_modified;
+					}
 					setLoading(false);
 				}
 			} catch (err) {
@@ -38,107 +71,67 @@ export function useCharacterSheet(sheetId: string) {
 		};
 	}, [sheetId]);
 
-	const broadcastUpdate = useDebounceCallback(async (data: CharacterT) => {
-		if (isApplyingRemote.current) return;
+	// Subscribe to realtime updates
+	useEffect(() => {
+		const subscription = subscribeToSheet(sheetId, (payload) => {
+			if (payload.eventType === "UPDATE" || payload.eventType === "INSERT") {
+				if (!payload.new) return;
 
-		const playerId = await OBR.player.getId();
-		const timestamp = Date.now();
-		lastUpdateTimestamp.current = timestamp;
+				const incomingLm = payload.new.last_modified;
 
-		const message: BroadcastMessage = {
-			type: "update",
-			sheetId,
-			data,
-			senderId: playerId,
-			timestamp,
-		};
+				// Skip if this is our own update (timestamp matches)
+				// or if this update is older than what we already have
+				if (incomingLm <= currentLastModifiedRef.current) {
+					return;
+				}
 
-		sendMessage({
-			channel: MAIN_BROADCAST_CHANNEL,
-			message: JSON.stringify(message),
+				// Apply the newer update
+				currentLastModifiedRef.current = incomingLm;
+				setSheet(payload.new.data);
+			} else if (payload.eventType === "DELETE") {
+				setSheet(null);
+				currentLastModifiedRef.current = 0;
+			}
 		});
-	}, 300);
+
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [sheetId]);
 
 	const save = useCallback(
 		async (data: CharacterT) => {
 			try {
-				await saveSheet(sheetId, data);
-				setSheet(data);
-				broadcastUpdate(data);
+				const timestamp = Date.now();
+				lastSentRef.current = timestamp;
+				await saveSheet(sheetId, data, timestamp);
+				currentLastModifiedRef.current = timestamp;
 			} catch (err) {
 				console.error("Failed to save sheet:", err);
 				throw err;
 			}
 		},
-		[sheetId, broadcastUpdate],
+		[sheetId],
 	);
 
 	const update = useCallback(
 		async (data: CharacterT) => {
-			if (isApplyingRemote.current) return;
-
+			// Optimistic update for immediate UI feedback
 			setSheet(data);
-			try {
-				await saveSheet(sheetId, data);
-				broadcastUpdate(data);
-			} catch (err) {
-				console.error("Failed to save sheet:", err);
-			}
+			// Debounce the actual save
+			debouncedSave(data);
 		},
-		[sheetId, broadcastUpdate],
+		[debouncedSave],
 	);
-
-	useEffect(() => {
-		if (!OBR.isAvailable) return;
-
-		const unsubscribe = listenMessage({
-			channel: MAIN_BROADCAST_CHANNEL,
-			onMessage: async (data) => {
-				try {
-					const message: BroadcastMessage = JSON.parse(data);
-
-					if (message.type !== "update") return;
-					if (message.sheetId !== sheetId) return;
-
-					const playerId = await OBR.player.getId();
-					if (message.senderId === playerId) return;
-
-					if (message.timestamp <= lastUpdateTimestamp.current) return;
-
-					isApplyingRemote.current = true;
-					setSheet(message.data);
-					lastUpdateTimestamp.current = message.timestamp;
-					isApplyingRemote.current = false;
-				} catch (err) {
-					console.error("Failed to handle broadcast:", err);
-				}
-			},
-		});
-
-		return () => {
-			unsubscribe();
-		};
-	}, [sheetId, listenMessage]);
 
 	const remove = useCallback(async () => {
 		try {
 			await deleteSheet(sheetId);
-			setSheet(null);
-			const playerId = await OBR.player.getId();
-			const message: BroadcastMessage = {
-				type: "delete",
-				sheetId,
-				senderId: playerId,
-			};
-			sendMessage({
-				channel: MAIN_BROADCAST_CHANNEL,
-				message: JSON.stringify(message),
-			});
 		} catch (err) {
 			console.error("Failed to delete sheet:", err);
 			throw err;
 		}
-	}, [sheetId, sendMessage]);
+	}, [sheetId]);
 
 	return {
 		sheet,

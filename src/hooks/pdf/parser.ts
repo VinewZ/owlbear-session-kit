@@ -188,7 +188,7 @@ export function parsePdfForm(form: Record<string, unknown[]>): CharacterT {
 					char.identity.class = value;
 					break;
 				case "Subclass":
-					char.identity.subclass = value;
+					char.identity.subclass = value || "Subclass";
 					break;
 				case "Level":
 					char.identity.level = Number(value);

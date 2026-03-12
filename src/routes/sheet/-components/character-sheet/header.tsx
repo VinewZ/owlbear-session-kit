@@ -70,7 +70,7 @@ export function Header({ sheet, sheetId, updateField }: HeaderProps) {
 				<Box className="min-w-0">
 					<Box className="flex gap-1 items-center">
 						<JsonInput
-							className="text-2xl font-bold leading-tight"
+							className="ml-1 text-2xl font-bold leading-tight"
 							value={sheet.identity.name}
 							onChange={(v) => updateField(["identity", "name"], v)}
 						/>

@@ -162,7 +162,6 @@ export function AbilitiesPanel({ sheet, updateField }: AbilitiesPanelProps) {
 									<Box sx={{ px: 2, py: 0.5 }}>
 										{skills.map((skill) => {
 											const skillVal = sheet.skills[skill];
-											if (skillVal === undefined) return null;
 
 											return (
 												<Box

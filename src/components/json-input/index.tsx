@@ -44,11 +44,11 @@ export function JsonInput({
 					previewClassName,
 				)}
 			>
-				{stringValue}{" "}
+				{stringValue}
 			</span>
 			<Editable.Preview
 				className={cn(
-					"text-start whitespace-pre-wrap wrap-break-word cursor-pointer focus:bg-white/10 rounded-md p-1 [grid-area:1/1]",
+					"p-2 bg-black/40 text-start whitespace-pre-wrap wrap-break-word cursor-pointer focus:bg-white/10 rounded-md [grid-area:1/1]",
 					previewClassName,
 				)}
 			>

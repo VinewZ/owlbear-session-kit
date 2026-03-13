@@ -82,7 +82,9 @@
 		"lvl": "Lvl",
 		"name": "Name",
 		"castTime": "Cast Time",
-		"range": "Range"
+		"range": "Range",
+		"addWeapon": "Add Weapon",
+		"addSpell": "Add Spell"
 	},
 	"footer": {
 		"close": "Close"

@@ -82,7 +82,9 @@
 		"lvl": "Nvl",
 		"name": "Nome",
 		"castTime": "Tempo de Conjuração",
-		"range": "Alcance"
+		"range": "Alcance",
+		"addWeapon": "Adicionar Arma",
+		"addSpell": "Adicionar Magia"
 	},
 	"footer": {
 		"close": "Fechar"

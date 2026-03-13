@@ -1,4 +1,6 @@
+import AddIcon from "@mui/icons-material/Add";
 import {
+	Button,
 	Paper,
 	Table,
 	TableBody,
@@ -20,50 +22,69 @@ type WeaponsTableProps = {
 export function WeaponsTable({ sheet, updateField }: WeaponsTableProps) {
 	const { t } = useTranslation();
 	return (
-		<TableContainer component={Paper} variant="outlined">
-			<Table size="small">
-				<TableHead>
-					<TableRow className="bg-secondary">
-						<TableCell>{t("combat.weapon")}</TableCell>
-						<TableCell>{t("combat.bonus")}</TableCell>
-						<TableCell>{t("combat.damage")}</TableCell>
-						<TableCell className="min-w-64">{t("combat.notes")}</TableCell>
-					</TableRow>
-				</TableHead>
-				<TableBody>
-					{sheet.weapons.map((weapon, i) => (
-						<TableRow
-							key={`weapon-${weapon.name ?? i}`}
-							className="hover:bg-secondary/50 transition-colors"
-						>
-							<TableCell>
-								<JsonInput
-									value={weapon.name}
-									onChange={(v) => updateField(["weapons", i, "name"], v)}
-								/>
-							</TableCell>
-							<TableCell>
-								<JsonInput
-									value={weapon.bonus}
-									onChange={(v) => updateField(["weapons", i, "bonus"], v)}
-								/>
-							</TableCell>
-							<TableCell>
-								<JsonInput
-									value={weapon.damage}
-									onChange={(v) => updateField(["weapons", i, "damage"], v)}
-								/>
-							</TableCell>
-							<TableCell>
-								<JsonInput
-									value={weapon.notes}
-									onChange={(v) => updateField(["weapons", i, "notes"], v)}
-								/>
-							</TableCell>
+		<>
+			<TableContainer component={Paper} variant="outlined">
+				<Table size="small">
+					<TableHead>
+						<TableRow className="bg-secondary">
+							<TableCell>{t("combat.weapon")}</TableCell>
+							<TableCell>{t("combat.bonus")}</TableCell>
+							<TableCell>{t("combat.damage")}</TableCell>
+							<TableCell className="min-w-64">{t("combat.notes")}</TableCell>
 						</TableRow>
-					))}
-				</TableBody>
-			</Table>
-		</TableContainer>
+					</TableHead>
+					<TableBody>
+						{sheet.weapons.map((weapon, i) => (
+							<TableRow
+								key={`weapon-${weapon.name ?? i}`}
+								className="hover:bg-secondary/50 transition-colors"
+							>
+								<TableCell>
+									<JsonInput
+										value={weapon.name}
+										onChange={(v) => updateField(["weapons", i, "name"], v)}
+									/>
+								</TableCell>
+								<TableCell>
+									<JsonInput
+										value={weapon.bonus}
+										onChange={(v) => updateField(["weapons", i, "bonus"], v)}
+									/>
+								</TableCell>
+								<TableCell>
+									<JsonInput
+										value={weapon.damage}
+										onChange={(v) => updateField(["weapons", i, "damage"], v)}
+									/>
+								</TableCell>
+								<TableCell>
+									<JsonInput
+										value={weapon.notes}
+										onChange={(v) => updateField(["weapons", i, "notes"], v)}
+									/>
+								</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
+			<Button
+				variant="outlined"
+				startIcon={<AddIcon />}
+				onClick={() => {
+					const newIndex = sheet.weapons.length;
+					updateField(["weapons", newIndex], {
+						name: "",
+						damage: "",
+						bonus: "",
+						notes: "",
+					});
+				}}
+				fullWidth
+				sx={{ mt: 2 }}
+			>
+				{t("combat.addWeapon")}
+			</Button>
+		</>
 	);
 }

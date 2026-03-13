@@ -1,4 +1,4 @@
-import { Box, Chip, Divider, Paper, Stack, Typography } from "@mui/material";
+import { Box, Chip, Divider, Paper, Typography } from "@mui/material";
 import { lighten } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { JsonInput } from "@/components/json-input";
@@ -75,39 +75,7 @@ export function SidebarPanel({ sheet, updateField }: SidebarPanelProps) {
 				</Paper>
 			</Section>
 
-			<Section title={t("character.spellsCantrips")}>
-				<Stack spacing={1}>
-					{sheet.spells.map((spell, i) => (
-						<Paper
-							key={`sidebar-spell-${spell.name ?? i}`}
-							variant="outlined"
-							className="px-3 py-2 bg-card"
-						>
-							<Box className="flex items-center justify-between">
-								<JsonInput
-									className="font-medium text-sm"
-									value={spell.name}
-									onChange={(v) => updateField(["spells", i, "name"], v)}
-								/>
-								<Chip
-									label={Number(spell.level)}
-									size="small"
-									variant="outlined"
-									className="text-xs font-bold uppercase shrink-0"
-								/>
-							</Box>
-							<Stack direction="row" spacing={1} className="mt-0.5">
-								<Typography variant="caption" className="text-foreground/50">
-									{spell.castingTime}
-								</Typography>
-								<Typography variant="caption" className="text-foreground/50">
-									{spell.range}
-								</Typography>
-							</Stack>
-						</Paper>
-					))}
-				</Stack>
-
+			<Section title={t("character.conjuration")}>
 				{sheet.spellcasting && (
 					<Paper variant="outlined" className="mt-3 bg-card">
 						<InfoRow

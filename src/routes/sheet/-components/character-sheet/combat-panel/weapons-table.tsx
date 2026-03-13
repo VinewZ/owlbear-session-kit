@@ -27,7 +27,7 @@ export function WeaponsTable({ sheet, updateField }: WeaponsTableProps) {
 						<TableCell>{t("combat.weapon")}</TableCell>
 						<TableCell>{t("combat.bonus")}</TableCell>
 						<TableCell>{t("combat.damage")}</TableCell>
-						<TableCell>{t("combat.notes")}</TableCell>
+						<TableCell className="min-w-64">{t("combat.notes")}</TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>

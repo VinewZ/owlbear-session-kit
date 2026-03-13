@@ -28,7 +28,7 @@ export function SpellsTable({ sheet, updateField }: SpellsTableProps) {
 						<TableCell>{t("combat.name")}</TableCell>
 						<TableCell>{t("combat.castTime")}</TableCell>
 						<TableCell>{t("combat.range")}</TableCell>
-						<TableCell>{t("combat.notes")}</TableCell>
+						<TableCell className="min-w-64">{t("combat.notes")}</TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>

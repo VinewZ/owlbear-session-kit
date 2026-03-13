@@ -84,15 +84,6 @@ export function Header({ sheet, sheetId, updateField }: HeaderProps) {
 							value={sheet.identity.level}
 							onChange={(v) => updateField(["identity", "level"], v)}
 						/>
-						<Typography className="text-foreground/60 mr-1">-</Typography>
-						<Typography className="text-foreground/60">
-							{t("character.level")}
-						</Typography>
-						<JsonInput
-							className="text-sm"
-							value={sheet.identity.experience}
-							onChange={(v) => updateField(["identity", "experience"], v)}
-						/>
 					</Box>
 					<Box className="flex items-baseline gap-1 flex-wrap leading-snug ml-1">
 						<JsonInput

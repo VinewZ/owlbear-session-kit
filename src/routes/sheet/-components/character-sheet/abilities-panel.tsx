@@ -35,7 +35,7 @@ export function AbilitiesPanel({ sheet, updateField }: AbilitiesPanelProps) {
 				bgcolor: (theme) => lighten(theme.palette.background.paper, 0.06),
 			}}
 		>
-			<Typography variant="overline" sx={{ color: "text.secondary", mb: 0.5 }}>
+			<Typography variant="overline" sx={{ color: "text.secondary" }}>
 				{t("abilities.abilitiesSkills")}
 			</Typography>
 
@@ -55,6 +55,18 @@ export function AbilitiesPanel({ sheet, updateField }: AbilitiesPanelProps) {
 
 					return (
 						<Paper key={ability} variant="outlined" sx={{ overflow: "hidden" }}>
+								<Typography
+									sx={{
+										fontWeight: "bold",
+										textTransform: "uppercase",
+                    fontSize: 24,
+                    textAlign: "center",
+                    marginTop: 1,
+									}}
+								>
+									{t(`abilities.${ability.toLowerCase()}`)}
+								</Typography>
+
 							<Box
 								sx={{
 									position: "relative",
@@ -65,22 +77,11 @@ export function AbilitiesPanel({ sheet, updateField }: AbilitiesPanelProps) {
 									py: 1,
 								}}
 							>
-								<Typography
-									variant="caption"
-									sx={{
-										fontWeight: "bold",
-										shrink: 0,
-										textTransform: "uppercase",
-									}}
-								>
-									{t(`abilities.${ability.toLowerCase()}`)}
-								</Typography>
-
 								<Box
 									sx={{
 										display: "flex",
 										alignItems: "center",
-										gap: 2,
+										gap: 1,
 										flex: 1,
 										justifyContent: "center",
 									}}
@@ -94,7 +95,7 @@ export function AbilitiesPanel({ sheet, updateField }: AbilitiesPanelProps) {
 										}}
 									>
 										<JsonInput
-											className="text-xl font-bold"
+											className="font-bold"
 											value={data.mod}
 											onChange={(v) =>
 												updateField(["abilities", ability, "mod"], v)

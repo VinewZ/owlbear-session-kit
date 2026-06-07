@@ -64,6 +64,15 @@ export type Currency = {
 	pp: number;
 };
 
+export type PlayerInfo = {
+	id: string;
+	name: string;
+};
+
+export type LastModified = PlayerInfo & {
+	timestamp: number;
+};
+
 export type CharacterT = {
 	identity: Identity;
 	equipment: string;

@@ -10,16 +10,17 @@ import {
 import { CheckCircle2, FileText, Upload as UploadIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import OBR from "@owlbear-rodeo/sdk";
 import { use5eSheetParser } from "@/hooks/pdf/use-5e-sheet-parser";
 import { useToken } from "@/lib/obr/hooks/use-token";
 import { logger } from "@/lib/utils";
-import type { CharacterT } from "@/types";
+import type { CharacterT, PlayerInfo } from "@/types";
 
 type UploadState = "idle" | "dragover" | "parsing" | "error" | "success";
 
 interface UploadProps {
 	sheetId: string;
-	onUpload: (character: CharacterT) => Promise<void>;
+	onUpload: (character: CharacterT, uploader: PlayerInfo) => Promise<void>;
 }
 
 export function Upload({ sheetId, onUpload }: UploadProps) {
@@ -54,8 +55,14 @@ export function Upload({ sheetId, onUpload }: UploadProps) {
 
 			setState("success");
 
+			const [playerId, playerName] = await Promise.all([
+				OBR.player.getId(),
+				OBR.player.getName(),
+			]);
+			const uploader: PlayerInfo = { id: playerId, name: playerName };
+
 			setTimeout(async () => {
-				await onUpload(character);
+				await onUpload(character, uploader);
 			}, 800);
 		} catch (err) {
 			logger.error("Unable to parse PDF:", err);

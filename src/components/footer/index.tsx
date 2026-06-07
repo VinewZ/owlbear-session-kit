@@ -1,4 +1,4 @@
-import { CloseFullscreen, OpenInFull } from "@mui/icons-material";
+import { CloseFullscreen, OpenInFull, Refresh } from "@mui/icons-material";
 import { Box, Button, Grid } from "@mui/material";
 import { darken } from "@mui/material/styles";
 import OBR from "@owlbear-rodeo/sdk";
@@ -10,9 +10,10 @@ import { DEFAULT_SHEET_POPOVER_SIZE, SHEET_POPOVER_ID } from "@/lib/constants";
 
 interface FooterProps {
 	onDelete?: () => void;
+	onRefresh?: () => void;
 }
 
-export function Footer({ onDelete }: FooterProps) {
+export function Footer({ onDelete, onRefresh }: FooterProps) {
 	const [isMinimized, setIsMinimized] = useState(false);
 	const { t } = useTranslation();
 	const { accentColor } = useAccentColor();
@@ -66,21 +67,31 @@ export function Footer({ onDelete }: FooterProps) {
 				{!isMinimized && <SettingsPopover onDelete={onDelete} />}
 			</Box>
 
-			<Button
-				onClick={closeSheet}
-				variant="contained"
-				sx={{
-					borderRadius: 1,
-					px: 2,
-					py: 1,
-					mr: 2,
-					color: "white",
-					bgcolor: (theme) =>
-						darken(accentColor || theme.palette.action.active, 0.2),
-				}}
-			>
-				{t("footer.close")}
-			</Button>
+			<Box className="flex items-center gap-1">
+				<Button
+					onClick={onRefresh}
+					className="rounded-lg transition hover:opacity-90"
+					title={t("footer.refresh")}
+				>
+					<Refresh color="action" />
+				</Button>
+
+				<Button
+					onClick={closeSheet}
+					variant="contained"
+					sx={{
+						borderRadius: 1,
+						px: 2,
+						py: 1,
+						mr: 2,
+						color: "white",
+						bgcolor: (theme) =>
+							darken(accentColor || theme.palette.action.active, 0.2),
+					}}
+				>
+					{t("footer.close")}
+				</Button>
+			</Box>
 		</Grid>
 	);
 }

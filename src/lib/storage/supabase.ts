@@ -1,14 +1,16 @@
-import type { RealtimePostgresChangesPayload } from "@supabase/realtime-js";
 import supabase from "@/lib/supabase";
-import type { CharacterT } from "@/types";
+import type { CharacterT, LastModified, PlayerInfo } from "@/types";
 
 export interface SheetRecord {
 	id: string;
-	data: CharacterT;
-	last_modified: number;
+	name: string;
+	class: string;
+	level: number;
+	sheet: CharacterT;
+	last_modified: LastModified;
+	uploader: PlayerInfo | null;
 }
 
-// CRUD Operations
 export async function getSheet(id: string): Promise<SheetRecord | null> {
 	const { data, error } = await supabase
 		.from("sheets")
@@ -17,7 +19,7 @@ export async function getSheet(id: string): Promise<SheetRecord | null> {
 		.single();
 
 	if (error) {
-		if (error.code === "PGRST116") return null; // Not found
+		if (error.code === "PGRST116") return null;
 		throw error;
 	}
 
@@ -26,15 +28,23 @@ export async function getSheet(id: string): Promise<SheetRecord | null> {
 
 export async function saveSheet(
 	id: string,
-	data: CharacterT,
-	last_modified?: number,
+	sheet: CharacterT,
+	modifier: PlayerInfo,
+	uploader?: PlayerInfo,
 ): Promise<void> {
-	const timestamp = last_modified ?? Date.now();
 	const { error } = await supabase.from("sheets").upsert(
 		{
 			id,
-			data,
-			last_modified: timestamp,
+			name: sheet.identity.name,
+			class: sheet.identity.class,
+			level: sheet.identity.level,
+			sheet,
+			last_modified: {
+				id: modifier.id,
+				name: modifier.name,
+				timestamp: Date.now(),
+			},
+			...(uploader ? { uploader } : {}),
 		},
 		{ onConflict: "id" },
 	);
@@ -58,82 +68,17 @@ export async function getAllSheets(): Promise<SheetRecord[]> {
 	return data || [];
 }
 
-// Realtime subscription helper
-export function subscribeToSheet(
-	sheetId: string,
-	callback: (payload: {
-		eventType: string;
-		new: SheetRecord | null;
-		old: SheetRecord | null;
-	}) => void,
-) {
-	const channel = supabase.channel(`sheet-${sheetId}`);
-	channel.on(
-		"postgres_changes",
-		{
-			event: "*",
-			schema: "public",
-			table: "sheets",
-			filter: `id=eq.${sheetId}`,
-		},
-		(payload: RealtimePostgresChangesPayload<SheetRecord>) => {
-			// Map Supabase payload to simplified shape
-			if (payload.eventType === "DELETE") {
-				callback({
-					eventType: payload.eventType,
-					new: null,
-					old: payload.old as SheetRecord,
-				});
-			} else {
-				// INSERT or UPDATE: new is guaranteed to be SheetRecord
-				callback({
-					eventType: payload.eventType,
-					new: payload.new,
-					old:
-						payload.eventType === "INSERT"
-							? null
-							: (payload.old as SheetRecord | null),
-				});
-			}
-		},
-	);
-	return channel.subscribe();
-}
+export type SheetListItem = Pick<
+	SheetRecord,
+	"id" | "name" | "class" | "level" | "last_modified"
+>;
 
-// Subscribe to all sheets (for list views)
-export function subscribeToAllSheets(
-	callback: (payload: {
-		eventType: string;
-		new: SheetRecord | null;
-		old: SheetRecord | null;
-	}) => void,
-) {
-	const channel = supabase.channel("all-sheets");
-	channel.on(
-		"postgres_changes",
-		{
-			event: "*",
-			schema: "public",
-			table: "sheets",
-		},
-		(payload: RealtimePostgresChangesPayload<SheetRecord>) => {
-			if (payload.eventType === "DELETE") {
-				callback({
-					eventType: payload.eventType,
-					new: null,
-					old: payload.old as SheetRecord,
-				});
-			} else {
-				callback({
-					eventType: payload.eventType,
-					new: payload.new,
-					old:
-						payload.eventType === "INSERT"
-							? null
-							: (payload.old as SheetRecord | null),
-				});
-			}
-		},
-	);
-	return channel.subscribe();
+export async function getSheetList(): Promise<SheetListItem[]> {
+	const { data, error } = await supabase
+		.from("sheets")
+		.select("id, name, class, level, last_modified")
+		.order("last_modified", { ascending: false });
+
+	if (error) throw error;
+	return data || [];
 }

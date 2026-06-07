@@ -93,7 +93,7 @@ export function Upload({ sheetId, onUpload, onAttachSheet }: UploadProps) {
 
 			setTimeout(async () => {
 				await onUpload(character, uploader);
-			}, 800);
+			}, 200);
 		} catch (err) {
 			logger.error("Unable to parse PDF:", err);
 			setError(t("upload.errors.parseFailed"));

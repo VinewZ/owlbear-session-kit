@@ -75,6 +75,7 @@ export function useCharacterSheet(sheetId: string) {
 				const uuid = await saveSheet(data, modifier, uploader);
 				sheetUuidRef.current = uuid;
 				await attachToken(sheetId, uuid);
+				setSheet(data);
 			} catch (err) {
 				console.error("Failed to save sheet:", err);
 				throw err;

@@ -1,6 +1,6 @@
+import OBR from "@owlbear-rodeo/sdk";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
-import OBR from "@owlbear-rodeo/sdk";
 import {
 	attachToken,
 	deleteSheet,

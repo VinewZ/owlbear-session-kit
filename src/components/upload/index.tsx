@@ -12,15 +12,15 @@ import {
 	Paper,
 	Typography,
 } from "@mui/material";
+import OBR from "@owlbear-rodeo/sdk";
 import {
 	CheckCircle2,
 	FileText,
 	ScrollText,
 	Upload as UploadIcon,
 } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import OBR from "@owlbear-rodeo/sdk";
 import { use5eSheetParser } from "@/hooks/pdf/use-5e-sheet-parser";
 import { useToken } from "@/lib/obr/hooks/use-token";
 import { getSheetList, type SheetListItem } from "@/lib/storage/supabase";

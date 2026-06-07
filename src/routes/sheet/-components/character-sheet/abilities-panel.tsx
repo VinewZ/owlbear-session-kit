@@ -55,17 +55,17 @@ export function AbilitiesPanel({ sheet, updateField }: AbilitiesPanelProps) {
 
 					return (
 						<Paper key={ability} variant="outlined" sx={{ overflow: "hidden" }}>
-								<Typography
-									sx={{
-										fontWeight: "bold",
-										textTransform: "uppercase",
-                    fontSize: 24,
-                    textAlign: "center",
-                    marginTop: 1,
-									}}
-								>
-									{t(`abilities.${ability.toLowerCase()}`)}
-								</Typography>
+							<Typography
+								sx={{
+									fontWeight: "bold",
+									textTransform: "uppercase",
+									fontSize: 24,
+									textAlign: "center",
+									marginTop: 1,
+								}}
+							>
+								{t(`abilities.${ability.toLowerCase()}`)}
+							</Typography>
 
 							<Box
 								sx={{

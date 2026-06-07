@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "@tanstack/react-router";
 import OBR from "@owlbear-rodeo/sdk";
 import { use5eSheetParser } from "@/hooks/pdf/use-5e-sheet-parser";
 import { useToken } from "@/lib/obr/hooks/use-token";
@@ -33,11 +32,11 @@ type UploadState = "idle" | "dragover" | "parsing" | "error" | "success";
 interface UploadProps {
 	sheetId: string;
 	onUpload: (character: CharacterT, uploader: PlayerInfo) => Promise<void>;
+	onAttachSheet: (sheetId: string) => Promise<void>;
 }
 
-export function Upload({ sheetId, onUpload }: UploadProps) {
+export function Upload({ sheetId, onUpload, onAttachSheet }: UploadProps) {
 	const { t } = useTranslation();
-	const navigate = useNavigate();
 	const { parsePdf } = use5eSheetParser();
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const { token } = useToken(sheetId);
@@ -311,18 +310,16 @@ export function Upload({ sheetId, onUpload }: UploadProps) {
 						>
 							{t("upload.existingSheets")}
 						</Typography>
-						<Paper variant="outlined" className="rounded-xl overflow-y-auto h-full max-h-82">
+						<Paper
+							variant="outlined"
+							className="rounded-xl overflow-y-auto h-full max-h-82"
+						>
 							<List disablePadding>
 								{sheets.map((sheet) => (
 									<ListItemButton
 										key={sheet.id}
 										className="gap-3"
-										onClick={() =>
-											navigate({
-												to: "/sheet/$sheetId",
-												params: { sheetId: sheet.id },
-											})
-										}
+										onClick={() => onAttachSheet(sheet.id)}
 									>
 										<ListItemIcon className="min-w-0">
 											<ScrollText size={20} className="text-foreground/50" />

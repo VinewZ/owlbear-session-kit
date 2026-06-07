@@ -13,8 +13,16 @@ export const Route = createFileRoute("/sheet/$sheetId")({
 
 function RouteComponent() {
 	const { sheetId } = Route.useParams();
-	const { sheet, loading, save, update, remove, refresh } =
-		useCharacterSheet(sheetId);
+	const {
+		sheet,
+		loading,
+		save,
+		update,
+		remove,
+		refresh,
+		attachSheet,
+		deletePermanently,
+	} = useCharacterSheet(sheetId);
 
 	return (
 		<Box className="w-full h-full">
@@ -30,9 +38,13 @@ function RouteComponent() {
 			) : sheet ? (
 				<CharacterSheet sheet={sheet} sheetId={sheetId} update={update} />
 			) : (
-				<Upload sheetId={sheetId} onUpload={save} />
+				<Upload sheetId={sheetId} onUpload={save} onAttachSheet={attachSheet} />
 			)}
-			<Footer onDelete={remove} onRefresh={refresh} />
+			<Footer
+				onDelete={deletePermanently}
+				onUnlink={remove}
+				onRefresh={refresh}
+			/>
 		</Box>
 	);
 }

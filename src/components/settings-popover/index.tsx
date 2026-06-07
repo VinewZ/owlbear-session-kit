@@ -1,4 +1,4 @@
-import { Delete, Settings } from "@mui/icons-material";
+import { Delete, LinkOff, Settings } from "@mui/icons-material";
 import {
 	Box,
 	Button,
@@ -21,13 +21,15 @@ import { useAccentColor } from "@/hooks/use-accent-color";
 
 interface SettingsPopoverProps {
 	onDelete?: () => void;
+	onUnlink?: () => void;
 }
 
-export function SettingsPopover({ onDelete }: SettingsPopoverProps) {
+export function SettingsPopover({ onDelete, onUnlink }: SettingsPopoverProps) {
 	const { t, i18n } = useTranslation();
 	const { accentColor, saveAccentColor, clearAccentColor } = useAccentColor();
 	const [anchor, setAnchor] = useState<HTMLButtonElement | null>(null);
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+	const [unlinkDialogOpen, setUnlinkDialogOpen] = useState(false);
 
 	function handleOpen(e: React.MouseEvent<HTMLButtonElement>) {
 		setAnchor(e.currentTarget);
@@ -103,22 +105,67 @@ export function SettingsPopover({ onDelete }: SettingsPopoverProps) {
 
 				<Divider />
 
-				<Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-					<Typography variant="caption" sx={{ color: "text.secondary" }}>
-						{t("settings.dangerZone")}
-					</Typography>
-					<Button
-						color="error"
-						variant="outlined"
-						size="small"
-						startIcon={<Delete />}
-						onClick={() => setDeleteDialogOpen(true)}
-						fullWidth
-					>
-						{t("settings.deleteSheet")}
-					</Button>
-				</Box>
+				{onUnlink && (
+					<Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+						<Button
+							color="warning"
+							variant="outlined"
+							size="small"
+							startIcon={<LinkOff />}
+							onClick={() => setUnlinkDialogOpen(true)}
+							fullWidth
+						>
+							{t("settings.unlinkSheet")}
+						</Button>
+					</Box>
+				)}
+
+				{onDelete && (
+					<Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+						<Typography variant="caption" sx={{ color: "text.secondary" }}>
+							{t("settings.dangerZone")}
+						</Typography>
+						<Button
+							color="error"
+							variant="outlined"
+							size="small"
+							startIcon={<Delete />}
+							onClick={() => setDeleteDialogOpen(true)}
+							fullWidth
+						>
+							{t("settings.deleteSheet")}
+						</Button>
+					</Box>
+				)}
 			</Popover>
+
+			<Dialog
+				open={unlinkDialogOpen}
+				onClose={() => setUnlinkDialogOpen(false)}
+			>
+				<DialogTitle>{t("settings.unlinkConfirmTitle")}</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						{t("settings.unlinkConfirmMessage")}
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setUnlinkDialogOpen(false)}>
+						{t("settings.cancel")}
+					</Button>
+					<Button
+						color="warning"
+						variant="contained"
+						onClick={async () => {
+							setUnlinkDialogOpen(false);
+							handleClose();
+							onUnlink?.();
+						}}
+					>
+						{t("settings.unlink")}
+					</Button>
+				</DialogActions>
+			</Dialog>
 
 			<Dialog
 				open={deleteDialogOpen}

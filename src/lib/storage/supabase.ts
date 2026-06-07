@@ -11,6 +11,11 @@ export interface SheetRecord {
 	uploader: PlayerInfo | null;
 }
 
+export interface TokenSheet {
+	token_id: string;
+	sheet_id: string;
+}
+
 export async function getSheet(id: string): Promise<SheetRecord | null> {
 	const { data, error } = await supabase
 		.from("sheets")
@@ -26,28 +31,74 @@ export async function getSheet(id: string): Promise<SheetRecord | null> {
 	return data;
 }
 
+export async function getSheetByToken(
+	tokenId: string,
+): Promise<SheetRecord | null> {
+	const { data, error } = await supabase
+		.from("token_sheets")
+		.select("sheet_id, sheets(*)")
+		.eq("token_id", tokenId)
+		.single();
+
+	if (error) {
+		if (error.code === "PGRST116") return null;
+		throw error;
+	}
+
+	const sheet = data?.sheets as unknown as SheetRecord | null;
+	return sheet ?? null;
+}
+
 export async function saveSheet(
-	id: string,
 	sheet: CharacterT,
 	modifier: PlayerInfo,
 	uploader?: PlayerInfo,
-): Promise<void> {
-	const { error } = await supabase.from("sheets").upsert(
-		{
-			id,
-			name: sheet.identity.name,
-			class: sheet.identity.class,
-			level: sheet.identity.level,
-			sheet,
-			last_modified: {
-				id: modifier.id,
-				name: modifier.name,
-				timestamp: Date.now(),
+): Promise<string> {
+	const { data, error } = await supabase
+		.from("sheets")
+		.upsert(
+			{
+				name: sheet.identity.name,
+				class: sheet.identity.class,
+				level: sheet.identity.level,
+				sheet,
+				last_modified: {
+					id: modifier.id,
+					name: modifier.name,
+					timestamp: Date.now(),
+				},
+				...(uploader ? { uploader } : {}),
 			},
-			...(uploader ? { uploader } : {}),
-		},
-		{ onConflict: "id" },
-	);
+			{
+				onConflict: "name,class",
+			},
+		)
+		.select("id")
+		.single();
+
+	if (error) throw error;
+	return data.id;
+}
+
+export async function attachToken(
+	tokenId: string,
+	sheetId: string,
+): Promise<void> {
+	const { error } = await supabase
+		.from("token_sheets")
+		.upsert(
+			{ token_id: tokenId, sheet_id: sheetId },
+			{ onConflict: "token_id" },
+		);
+
+	if (error) throw error;
+}
+
+export async function detachToken(tokenId: string): Promise<void> {
+	const { error } = await supabase
+		.from("token_sheets")
+		.delete()
+		.eq("token_id", tokenId);
 
 	if (error) throw error;
 }

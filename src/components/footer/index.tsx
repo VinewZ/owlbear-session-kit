@@ -10,10 +10,11 @@ import { DEFAULT_SHEET_POPOVER_SIZE, SHEET_POPOVER_ID } from "@/lib/constants";
 
 interface FooterProps {
 	onDelete?: () => void;
+	onUnlink?: () => void;
 	onRefresh?: () => void;
 }
 
-export function Footer({ onDelete, onRefresh }: FooterProps) {
+export function Footer({ onDelete, onUnlink, onRefresh }: FooterProps) {
 	const [isMinimized, setIsMinimized] = useState(false);
 	const { t } = useTranslation();
 	const { accentColor } = useAccentColor();
@@ -64,7 +65,9 @@ export function Footer({ onDelete, onRefresh }: FooterProps) {
 						<CloseFullscreen color="action" />
 					)}
 				</Button>
-				{!isMinimized && <SettingsPopover onDelete={onDelete} />}
+				{!isMinimized && (
+					<SettingsPopover onDelete={onDelete} onUnlink={onUnlink} />
+				)}
 			</Box>
 
 			<Box className="flex items-center gap-1">

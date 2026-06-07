@@ -114,6 +114,8 @@
 		"uploadingFor": "Uploading character sheet for:",
 		"unknownToken": "Unknown Token",
 		"supportedFormats": "Supported: PDF files with form fields (D&D 5e)",
+		"existingSheets": "Existing Sheets",
+		"noSheets": "No existing sheets found",
 		"errors": {
 			"invalidType": "Please select a PDF file",
 			"empty": "No character data found in PDF",

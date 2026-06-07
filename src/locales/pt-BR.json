@@ -114,6 +114,8 @@
 		"uploadingFor": "Enviando ficha de personagem para:",
 		"unknownToken": "Token Desconhecido",
 		"supportedFormats": "Suportado: arquivos PDF com campos de formulário (D&D 5e)",
+		"existingSheets": "Fichas Existentes",
+		"noSheets": "Nenhuma ficha existente encontrada",
 		"errors": {
 			"invalidType": "Por favor, selecione um arquivo PDF",
 			"empty": "Nenhum dado de personagem encontrado no PDF",

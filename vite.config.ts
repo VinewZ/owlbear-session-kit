@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import { fileURLToPath, URL } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
@@ -5,9 +6,7 @@ import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
-// https://vitejs.dev/config/
 export default defineConfig({
-	// Treat 3D asset formats as static URL references, not JS modules
 	assetsInclude: ["**/*.glb", "**/*.hdr"],
 	plugins: [
 		devtools(),
@@ -21,6 +20,15 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": fileURLToPath(new URL("./src", import.meta.url)),
+		},
+	},
+	build: {
+		rollupOptions: {
+			input: {
+				main: resolve(__dirname, "index.html"),
+				popover: resolve(__dirname, "popover.html"),
+				background: resolve(__dirname, "background.html"),
+			},
 		},
 	},
 	server: {

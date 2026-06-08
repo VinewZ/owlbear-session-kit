@@ -21,9 +21,26 @@ function getTheme(obrTheme?: Theme) {
 			borderRadius: 12,
 		},
 		components: {
+			MuiCssBaseline: {
+				styleOverrides: {
+					body: {
+						backgroundColor: OBR.isAvailable ? "transparent" : undefined,
+					},
+				},
+			},
 			MuiButtonBase: {
 				defaultProps: {
 					disableRipple: true,
+				},
+			},
+			MuiDialog: {
+				styleOverrides: {
+					paper: {
+						backgroundImage:
+							obrTheme?.mode === "LIGHT"
+								? "linear-gradient(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05))"
+								: "linear-gradient(rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.07))",
+					},
 				},
 			},
 		},

@@ -34,7 +34,7 @@ export function InteractiveTray() {
 			}}
 		>
 			<TraySuspense>
-				<Canvas frameloop="demand">
+				<Canvas frameloop="demand" gl={{ powerPreference: "high-performance" }}>
 					<AudioListenerProvider>
 						<Environment files={environment} />
 						<ContactShadows

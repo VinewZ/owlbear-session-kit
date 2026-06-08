@@ -10,6 +10,7 @@ import { Sidebar } from "./controls/Sidebar";
 import { useDiceControlsStore } from "./controls/store";
 import { useDiceRollStore } from "./dice/store";
 import { DiceRollSync } from "./plugin/DiceRollSync";
+import { PartyTrays } from "./plugin/PartyTrays";
 import { ResizeObserver as DiceResizeObserver } from "./plugin/ResizeObserver";
 import { InteractiveTray } from "./tray/InteractiveTray";
 
@@ -41,6 +42,7 @@ export function DiceTray() {
 				<Sidebar />
 				<InteractiveTray />
 			</Stack>
+			<PartyTrays />
 			<DiceRollSync />
 			<DiceResizeObserver />
 		</Container>

@@ -8,7 +8,6 @@ import type { DiceRoll as DiceRollType } from "../types/DiceRoll";
 import type { DiceThrow } from "../types/DiceThrow";
 import type { DiceTransform } from "../types/DiceTransform";
 import type { Die } from "../types/Die";
-import { Dice as DefaultDice } from "./Dice";
 import { PhysicsDice } from "./PhysicsDice";
 
 export function DiceRoll({
@@ -32,8 +31,10 @@ export function DiceRoll({
 		string,
 		DiceTransform | null
 	> | null>;
-	/** Override to provide a custom Dice component  */
-	Dice: React.FC<JSX.IntrinsicElements["group"] & { die: Die }>;
+	/** Override to provide a custom Dice component */
+	Dice: React.ComponentType<
+		Omit<JSX.IntrinsicElements["group"], "ref"> & { die: Die }
+	>;
 }) {
 	const allowPhysicsDebug = useDebugStore((state) => state.allowPhysicsDebug);
 
@@ -122,7 +123,3 @@ export function DiceRoll({
 		);
 	}
 }
-
-DiceRoll.defaultProps = {
-	Dice: DefaultDice,
-};

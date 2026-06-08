@@ -1,159 +1,104 @@
 import NoHistoryIcon from "@mui/icons-material/ManageSearchRounded";
 import HistoryIcon from "@mui/icons-material/SavedSearchRounded";
+import HiddenIcon from "@mui/icons-material/VisibilityOffRounded";
+import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
+import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
 import Stack from "@mui/material/Stack";
 import { useTheme } from "@mui/material/styles";
-import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { useId, useState } from "react";
-import { useDiceRollStore } from "../dice/store";
+import type { Dispatch, SetStateAction } from "react";
+import SimpleBar from "simplebar-react";
 import { DicePreview } from "../previews/DicePreview";
-import type { RecentRoll } from "./history";
-import { useDiceHistoryStore } from "./history";
-import { getDiceToRoll, useDiceControlsStore } from "./store";
+import {
+	type RollHistoryEntry,
+	useRollHistoryStore,
+} from "./roll-history-store";
 
-export function DiceHistory() {
-	const startRoll = useDiceRollStore((state) => state.startRoll);
+type DiceHistoryPropsT = {
+	showHistory: boolean;
+	setShowHistory: Dispatch<SetStateAction<boolean>>;
+};
 
-	const hidden = useDiceControlsStore((state) => state.diceHidden);
-	const setBonus = useDiceControlsStore((state) => state.setDiceBonus);
-	const setAdvantage = useDiceControlsStore((state) => state.setDiceAdvantage);
-	const resetDiceCounts = useDiceControlsStore(
-		(state) => state.resetDiceCounts,
-	);
-
-	function handleRoll(roll: RecentRoll) {
-		const dice = getDiceToRoll(roll.counts, roll.advantage, roll.diceById);
-		startRoll({ dice, bonus: roll.bonus, hidden });
-		resetDiceCounts();
-		setBonus(0);
-		setAdvantage(null);
-		handleClose();
-	}
-
-	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const open = Boolean(anchorEl);
-	const historyButtonId = useId();
-	const historyMenuId = useId();
-	function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
-		setAnchorEl(event.currentTarget);
-	}
-	function handleClose() {
-		setAnchorEl(null);
-	}
-
-	const recentRolls = useDiceHistoryStore((state) => state.recentRolls);
-	const removeRecentRoll = useDiceHistoryStore(
-		(state) => state.removeRecentRoll,
-	);
-
+export function DiceHistory({
+	showHistory,
+	setShowHistory,
+}: DiceHistoryPropsT) {
 	return (
-		<>
-			<Tooltip title="History" placement="top" disableInteractive>
-				<IconButton
-					id={historyButtonId}
-					aria-controls={open ? historyMenuId : undefined}
-					aria-haspopup="true"
-					aria-expanded={open ? "true" : undefined}
-					onClick={handleClick}
-				>
-					<HistoryIcon className="text-white" />
-				</IconButton>
-			</Tooltip>
-			<Menu
-				id={historyMenuId}
-				anchorEl={anchorEl}
-				open={open}
-				onClose={handleClose}
-				MenuListProps={{
-					"aria-labelledby": historyButtonId,
-				}}
-				anchorOrigin={{
-					vertical: "center",
-					horizontal: "right",
-				}}
-				transformOrigin={{
-					vertical: "center",
-					horizontal: "left",
-				}}
-			>
-				<Stack className="w-52" px={1} gap={0.5}>
-					{recentRolls.map((recentRoll, index) => (
-						<RecentRollChip
-							key={`${recentRoll.bonus}-${recentRoll.advantage}-${index}`}
-							recentRoll={recentRoll}
-							onRoll={() => handleRoll(recentRoll)}
-							onDelete={() => removeRecentRoll(index)}
-						/>
-					))}
-					{recentRolls.length === 0 && <EmptyMessage />}
-				</Stack>
-			</Menu>
-		</>
+		<IconButton
+			color={showHistory ? "primary" : "default"}
+			onClick={() => {
+				setShowHistory((prev) => !prev);
+			}}
+		>
+			<HistoryIcon />
+		</IconButton>
 	);
 }
 
-function RecentRollChip({
-	recentRoll,
-	onRoll,
-	onDelete,
-}: {
-	recentRoll: RecentRoll;
-	onRoll: () => void;
-	onDelete: () => void;
-}) {
+export function DiceHistoryView() {
+	const entries = useRollHistoryStore((state) => state.entries);
+	const theme = useTheme();
+
+	return (
+		<Box
+			component="div"
+			sx={{
+				width: "100dvw",
+				height: "100dvh",
+				bgcolor: theme.palette.mode === "dark" ? "#22263a" : "#f1f3f9",
+				display: "flex",
+				flexDirection: "column",
+				overflow: "hidden",
+			}}
+		>
+			<Stack
+				direction="row"
+				alignItems="center"
+				justifyContent="space-between"
+				px={2}
+				py={1}
+				sx={{ flexShrink: 0 }}
+			>
+				<Typography variant="subtitle2" fontWeight={600}>
+					Roll History
+				</Typography>
+				<ClearHistoryButton />
+			</Stack>
+			<Divider />
+			{entries.length === 0 ? (
+				<EmptyHistory />
+			) : (
+				<SimpleBar style={{ flex: 1, overflow: "hidden" }}>
+					<Stack gap={0} px={1} py={1}>
+						{[...entries].reverse().map((entry) => (
+							<RollHistoryItem key={entry.id} entry={entry} />
+						))}
+					</Stack>
+				</SimpleBar>
+			)}
+		</Box>
+	);
+}
+
+function ClearHistoryButton() {
+	const entries = useRollHistoryStore((state) => state.entries);
+	const clearHistory = useRollHistoryStore((state) => state.clearHistory);
+	if (entries.length === 0) return null;
 	return (
 		<Chip
-			sx={{
-				flexGrow: 1,
-				flexBasis: 0,
-				".MuiChip-deleteIcon": {
-					position: "absolute",
-					right: 0,
-				},
-			}}
-			label={
-				<Stack direction="row" alignItems="center" gap={0.5} px={2}>
-					{Object.entries(recentRoll.counts).map(([id, count]) => {
-						const die = recentRoll.diceById[id];
-						if (!die || count === 0) {
-							return null;
-						}
-						return (
-							<Stack key={id} direction="row" alignItems="center" gap={0.25}>
-								{count}{" "}
-								<DicePreview
-									diceStyle={die.style}
-									diceType={die.type}
-									size="small"
-								/>
-							</Stack>
-						);
-					})}
-					{recentRoll.bonus !== 0 && (
-						<span>
-							{recentRoll.bonus > 0 && "+"}
-							{recentRoll.bonus}
-						</span>
-					)}
-					{recentRoll.advantage !== null && (
-						<span>{recentRoll.advantage === "ADVANTAGE" ? "Adv" : "Dis"}</span>
-					)}
-				</Stack>
-			}
-			variant="filled"
-			onClick={() => onRoll()}
-			onDelete={() => onDelete()}
+			label="Clear"
+			size="small"
+			variant="outlined"
+			onClick={clearHistory}
 		/>
 	);
 }
 
-function EmptyMessage() {
+function EmptyHistory() {
 	const theme = useTheme();
-
 	return (
 		<Stack
 			sx={{
@@ -161,7 +106,8 @@ function EmptyMessage() {
 				justifyContent: "center",
 				flexDirection: "column",
 				gap: 0.5,
-				pb: 1,
+				height: "100%",
+				pb: 4,
 			}}
 		>
 			<Box
@@ -184,4 +130,119 @@ function EmptyMessage() {
 			</Typography>
 		</Stack>
 	);
+}
+
+function RollHistoryItem({ entry }: { entry: RollHistoryEntry }) {
+	const theme = useTheme();
+	const timeStr = formatRelativeTime(entry.timestamp);
+
+	return (
+		<Stack
+			direction="row"
+			alignItems="center"
+			gap={1}
+			px={1.5}
+			py={1}
+			sx={{
+				borderRadius: 1,
+				"&:hover": {
+					bgcolor:
+						theme.palette.mode === "dark"
+							? "rgba(255,255,255,0.05)"
+							: "rgba(0,0,0,0.04)",
+				},
+			}}
+		>
+			<Avatar
+				sx={{
+					bgcolor: entry.player.color,
+					width: 28,
+					height: 28,
+					fontSize: "0.8rem",
+				}}
+			>
+				{entry.player.name[0]}
+			</Avatar>
+			<Stack flex={1} minWidth={0}>
+				<Stack direction="row" alignItems="center" gap={0.5}>
+					<Typography
+						variant="body2"
+						fontWeight={600}
+						noWrap
+						sx={{ lineHeight: 1.2 }}
+					>
+						{entry.player.name}
+					</Typography>
+					<Typography
+						variant="caption"
+						sx={{
+							color:
+								theme.palette.mode === "dark"
+									? "rgba(255,255,255,0.46)"
+									: "rgba(0,0,0,0.46)",
+							flexShrink: 0,
+						}}
+					>
+						{timeStr}
+					</Typography>
+				</Stack>
+				{entry.diceRoll.hidden ? (
+					<Stack direction="row" alignItems="center" gap={0.5}>
+						<HiddenIcon sx={{ fontSize: 16, opacity: 0.6 }} />
+						<Typography variant="caption" sx={{ opacity: 0.6 }}>
+							Hidden Roll
+						</Typography>
+					</Stack>
+				) : (
+					<Stack direction="row" alignItems="center" gap={0.25} flexWrap="wrap">
+						{entry.dieResults.map((die) => (
+							<Stack
+								key={`${die.type}-${die.value}`}
+								direction="row"
+								alignItems="center"
+								gap={0.15}
+							>
+								<DicePreview
+									diceStyle={die.style}
+									diceType={die.type}
+									size="small"
+								/>
+								<Typography variant="caption" fontWeight={500}>
+									{die.value}
+								</Typography>
+							</Stack>
+						))}
+						{entry.diceRoll.bonus !== undefined &&
+							entry.diceRoll.bonus !== 0 && (
+								<Typography variant="caption" fontWeight={500}>
+									{entry.diceRoll.bonus > 0 ? "+" : ""}
+									{entry.diceRoll.bonus}
+								</Typography>
+							)}
+					</Stack>
+				)}
+			</Stack>
+			{!entry.diceRoll.hidden && entry.finalValue !== null && (
+				<Typography
+					variant="h6"
+					fontWeight={700}
+					sx={{ flexShrink: 0, lineHeight: 1 }}
+				>
+					{entry.finalValue}
+				</Typography>
+			)}
+		</Stack>
+	);
+}
+
+function formatRelativeTime(timestamp: number): string {
+	const diffMs = Date.now() - timestamp;
+	const diffSec = Math.floor(diffMs / 1000);
+	if (diffSec < 60) return "just now";
+	const diffMin = Math.floor(diffSec / 60);
+	if (diffMin < 60) return `${diffMin}m`;
+	const diffHr = Math.floor(diffMin / 60);
+	if (diffHr < 24) return `${diffHr}h`;
+	const diffDay = Math.floor(diffHr / 24);
+	return `${diffDay}d`;
 }

@@ -2,7 +2,7 @@
   "name": "Session Kit",
   "author": "VinewZ",
   "homepage_url": "https://github.com/vinewZ/owlbear-session-kit",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "manifest_version": 1,
   "icon": "/logo.png",
   "description": "A D&D 5e character sheet companion with PDF import",

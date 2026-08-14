@@ -43,7 +43,7 @@ export type Combat = {
 	tempHP?: number;
 	armorClass?: number;
 	speed?: string;
-	initiative?: number;
+	initiative?: string;
 	proficiencyBonus?: number;
 };
 

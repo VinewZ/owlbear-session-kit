@@ -119,6 +119,8 @@
 		"unknownToken": "Unknown Token",
 		"supportedFormats": "Supported: PDF files with form fields (D&D 5e)",
 		"existingSheets": "Existing Sheets",
+		"searchSheets": "Search sheets",
+		"noMatches": "No sheets match your search",
 		"noSheets": "No existing sheets found",
 		"errors": {
 			"invalidType": "Please select a PDF file",

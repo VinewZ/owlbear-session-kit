@@ -5,6 +5,7 @@ import {
 	CircularProgress,
 	Collapse,
 	Divider,
+	TextField,
 	List,
 	ListItemButton,
 	ListItemIcon,
@@ -17,9 +18,10 @@ import {
 	CheckCircle2,
 	FileText,
 	ScrollText,
+	Search,
 	Upload as UploadIcon,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { use5eSheetParser } from "@/hooks/pdf/use-5e-sheet-parser";
 import { useToken } from "@/lib/obr/hooks/use-token";
@@ -47,6 +49,13 @@ export function Upload({ sheetId, onUpload, onAttachSheet }: UploadProps) {
 
 	const [sheets, setSheets] = useState<SheetListItem[]>([]);
 	const [sheetsLoading, setSheetsLoading] = useState(true);
+	const [searchQuery, setSearchQuery] = useState("");
+
+	const filteredSheets = useMemo(() => {
+		const query = searchQuery.trim().toLowerCase();
+		if (!query) return sheets;
+		return sheets.filter((sheet) => sheet.name.toLowerCase().includes(query));
+	}, [sheets, searchQuery]);
 
 	useEffect(() => {
 		let mounted = true;
@@ -310,28 +319,50 @@ export function Upload({ sheetId, onUpload, onAttachSheet }: UploadProps) {
 						>
 							{t("upload.existingSheets")}
 						</Typography>
-						<Paper
+						<TextField
+							size="small"
+							fullWidth
 							variant="outlined"
-							className="rounded-xl overflow-y-auto h-full max-h-82"
-						>
-							<List disablePadding>
-								{sheets.map((sheet) => (
-									<ListItemButton
-										key={sheet.id}
-										className="gap-3"
-										onClick={() => onAttachSheet(sheet.id)}
-									>
-										<ListItemIcon className="min-w-0">
-											<ScrollText size={20} className="text-foreground/50" />
-										</ListItemIcon>
-										<ListItemText
-											primary={sheet.name}
-											secondary={`${sheet.class} — ${t("character.level")} ${sheet.level}`}
-										/>
-									</ListItemButton>
-								))}
-							</List>
-						</Paper>
+							placeholder={t("upload.searchSheets")}
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							className="mb-2"
+							slotProps={{
+								input: {
+									startAdornment: (
+										<Search size={18} className="text-foreground/40 mr-2" />
+									),
+								},
+							}}
+						/>
+						{filteredSheets.length > 0 ? (
+							<Paper
+								variant="outlined"
+								className="rounded-xl overflow-y-auto h-full max-h-82"
+							>
+								<List disablePadding>
+									{filteredSheets.map((sheet) => (
+										<ListItemButton
+											key={sheet.id}
+											className="gap-3"
+											onClick={() => onAttachSheet(sheet.id)}
+										>
+											<ListItemIcon className="min-w-0">
+												<ScrollText size={20} className="text-foreground/50" />
+											</ListItemIcon>
+											<ListItemText
+												primary={sheet.name}
+												secondary={`${sheet.class} — ${t("character.level")} ${sheet.level}`}
+											/>
+										</ListItemButton>
+									))}
+								</List>
+							</Paper>
+						) : (
+							<Typography variant="body2" className="text-foreground/40">
+								{t("upload.noMatches")}
+							</Typography>
+						)}
 					</Box>
 				</>
 			)}

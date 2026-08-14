@@ -119,6 +119,8 @@
 		"unknownToken": "Token Desconhecido",
 		"supportedFormats": "Suportado: arquivos PDF com campos de formulário (D&D 5e)",
 		"existingSheets": "Fichas Existentes",
+		"searchSheets": "Buscar fichas",
+		"noMatches": "Nenhuma ficha corresponde à busca",
 		"noSheets": "Nenhuma ficha existente encontrada",
 		"errors": {
 			"invalidType": "Por favor, selecione um arquivo PDF",
